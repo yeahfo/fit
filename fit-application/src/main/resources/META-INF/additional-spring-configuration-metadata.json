@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "spring.redis.redisson.config",
+      "type": "java.lang.String",
+      "description": "https://github.com/redisson/redisson/wiki/2.-Configuration#262-single-instance-yaml-config-format."
+  }
+] }

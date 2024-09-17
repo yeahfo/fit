@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: bitnami/mongodb:7.0.12
+    environment:
+      TZ: Asia/Shanghai
+      MONGODB_DATABASE: local_db
+      MONGODB_USERNAME: mongo
+      MONGODB_PASSWORD: mongo
+      MONGODB_ROOT_USER: root
+      MONGODB_ROOT_PASSWORD: root
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_KEY: rsk123456
+      MONGODB_EXTRA_FLAGS: >
+        --bind_ip_all
+    ports:
+      - "27017:27017"
+  redis:
+    image: redis/redis-stack:7.2.0-v10
+    ports:
+      - "6379:6379"
+      - "8001:8001"
+    environment:
+      TZ: Asia/Shanghai
+      REDIS_ARGS: >
+        --requirepass redispw
