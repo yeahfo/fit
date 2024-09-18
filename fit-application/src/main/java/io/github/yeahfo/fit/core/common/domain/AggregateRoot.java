@@ -4,6 +4,7 @@ import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.utils.Identified;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.Instant;
 import java.util.LinkedList;
@@ -12,6 +13,7 @@ import java.util.List;
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
+import static lombok.AccessLevel.PRIVATE;
 import static lombok.AccessLevel.PROTECTED;
 
 
@@ -32,7 +34,8 @@ public abstract class AggregateRoot implements Identified< String > {
     /**
      * Version number, implementing optimistic locking.
      */
-    private Long _version;
+    @Setter(PRIVATE)
+    private Long version;
 
     @Override
     public String identifier( ) {

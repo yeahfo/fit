@@ -2,9 +2,12 @@ package io.github.yeahfo.fit.core.common.utils;
 
 import java.util.Collection;
 
+import static io.github.yeahfo.fit.core.common.utils.SnowflakeIdGenerator.newSnowflakeId;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 
 public interface Identified< Identifier > {
+    Identifier identifier( );
+
     static boolean isDuplicated( Collection< ? extends Identified< ? > > collection ) {
         if ( isEmpty( collection ) ) {
             return false;
@@ -13,5 +16,7 @@ public interface Identified< Identifier > {
         return count != collection.size( );
     }
 
-    Identifier identifier( );
+    static String newDepartmentHierarchyId( ) {
+        return "DHC" + newSnowflakeId( );
+    }
 }

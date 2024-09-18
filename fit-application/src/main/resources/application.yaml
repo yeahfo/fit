@@ -50,3 +50,4 @@ logging:
 #    io.eventuate.messaging.redis.spring.producer.EventuateRedisProducer: info
     org.springframework.data.mongodb.core.MongoTemplate: debug
     io.netty.resolver.dns.DnsServerAddressStreamProviders: error
+    org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport: warn

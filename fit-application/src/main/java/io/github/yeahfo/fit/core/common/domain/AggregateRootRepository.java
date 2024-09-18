@@ -1,29 +1,50 @@
 package io.github.yeahfo.fit.core.common.domain;
 
-import java.util.List;
-import java.util.Optional;
+
+import io.github.yeahfo.fit.core.common.exception.FitException;
+
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static io.github.yeahfo.fit.core.common.exception.ErrorCode.AR_NOT_FOUND;
+import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
+import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
 
 public interface AggregateRootRepository< A extends AggregateRoot, ID > {
 
     A save( A aggregateRoot );
 
-    List< AggregateRoot > saveAll( Iterable< AggregateRoot > aggregateRoots );
+    default List< A > saveAll( Iterable< A > aggregateRoots ) {
+        return Collections.emptyList( );
+    }
 
     Optional< A > findById( ID id );
 
-    List< A > findAllById( Iterable< ID > ids );
-
-    boolean existsById( ID id );
+    default List< A > findAllById( Iterable< ID > ids ) {
+        return Collections.emptyList( );
+    }
 
     void deleteById( ID id );
 
-    void delete( A aggregateRoot );
+    default void deleteAllById( Iterable< ID > ids ) {
+    }
 
-    void deleteAllById( Iterable< ID > ids );
+    default A find( ID id ) {
+        requireNonBlank( String.valueOf( id ), "Aggregate root ID must not be blank." );
+        return findById( id ).orElseThrow( ( ) -> new FitException( AR_NOT_FOUND, "未找到资源。", mapOf( "type", getType( ).getSimpleName( ), "id", id ) ) );
+    }
 
-    void deleteAll( Iterable< AggregateRoot > aggregateRoots );
-//    default A findByOne( Identifier identifier ) {
-//        requireNonBlank( String.valueOf( identifier ), "AR ID must not be blank." );
-//        return findById( id ).orElseThrow( ( ) -> new MryException( AR_NOT_FOUND, "未找到资源。", mapOf( "type", getType( ).getSimpleName( ), "id", id ) ) );
-//    }
+    Map< String, Class< ? > > classMapper = new HashMap<>( );
+
+    default Class< ? > getType( ) {
+        String className = getClass( ).getSimpleName( );
+
+        if ( !classMapper.containsKey( className ) ) {
+            Type genericSuperclass = getClass( ).getGenericSuperclass( );
+            Type[] actualTypeArguments = ( ( ParameterizedType ) genericSuperclass ).getActualTypeArguments( );
+            classMapper.put( className, ( Class< ? > ) actualTypeArguments[ 0 ] );
+        }
+        return classMapper.get( className );
+    }
 }
