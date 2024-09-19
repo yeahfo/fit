@@ -8,48 +8,15 @@ import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.member.domain.events.MemberCreatedEvent;
 import io.github.yeahfo.fit.core.member.domain.events.MemberDomainEvent;
-import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_ADMIN;
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.*;
 import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
-import static java.time.LocalDate.now;
-import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class Member extends AggregateRoot {
-    @Getter
-    @Builder
-    @EqualsAndHashCode
-    @AllArgsConstructor( access = PRIVATE )
-    public static class FailedLoginCount {
-        private static final int MAX_ALLOWED_FAILED_LOGIN_PER_DAY = 30;
-
-        private LocalDate date;
-        private int count;
-
-        public static FailedLoginCount init( ) {
-            return FailedLoginCount.builder( ).date( now( ) ).count( 0 ).build( );
-        }
-
-        private void recordFailedLogin( ) {
-            LocalDate now = now( );
-            if ( now.equals( date ) ) {
-                count++;
-            } else {
-                this.date = now;
-                this.count = 0;
-            }
-        }
-
-        private boolean isLocked( ) {
-            return now( ).equals( date ) && this.count >= MAX_ALLOWED_FAILED_LOGIN_PER_DAY;
-        }
-    }
-
     protected String name;
     protected String password;
     protected Role role;

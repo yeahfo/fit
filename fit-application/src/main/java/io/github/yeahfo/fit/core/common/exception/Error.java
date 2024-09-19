@@ -14,6 +14,10 @@ public record Error( ErrorCode code,
                      String traceId,
                      Map< String, Object > data ) {
 
+    public Error( FitException ex, String path, String traceId ) {
+        this( ex.getCode( ), ex.getMessage( ), ex.getUserMessage( ), ex.getCode( ).getStatus( ), path, now( ), traceId, ex.getData( ) );
+    }
+
     public Error( ErrorCode code, int status, String message, String path, String traceId, Map< String, Object > data ) {
         this( code, message, message, status, path, now( ), traceId, data );
     }
