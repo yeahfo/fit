@@ -1,6 +1,6 @@
 package io.github.yeahfo.fit.core.common.exception;
 
-import io.github.yeahfo.fit.common.tracing.FitTracingService;
+import io.github.yeahfo.fit.common.tracing.TracingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -22,7 +22,7 @@ import static org.springframework.http.HttpStatus.valueOf;
 public class RestErrorController implements ErrorController {
     private static final String ERROR_PATH = "/error";
     private final ErrorAttributes errorAttributes;
-    private final FitTracingService fitTracingService;
+    private final TracingService tracingService;
 
     @RequestMapping( value = ERROR_PATH )
     public ResponseEntity< ? > handleError( WebRequest webRequest ) {
@@ -31,7 +31,7 @@ public class RestErrorController implements ErrorController {
         int status = ( int ) errorAttributes.get( "status" );
         String message = ( String ) errorAttributes.get( "message" );
         String path = ( String ) errorAttributes.get( "path" );
-        String traceId = fitTracingService.currentTraceId( );
+        String traceId = tracingService.currentTraceId( );
 
         log.error( "Error access[{}]:{}.", path, message );
         Error errorDetail = new Error( ErrorCode.SYSTEM_ERROR, status, error, path, traceId, null );

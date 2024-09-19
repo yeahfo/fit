@@ -1,6 +1,6 @@
 package io.github.yeahfo.fit.core.common.domain.user;
 
-import static io.github.yeahfo.fit.core.common.domain.user.Role.ROBOT;
+import static io.github.yeahfo.fit.core.common.domain.user.Role.*;
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -37,5 +37,17 @@ public record User( String memberId,
 
     private boolean internalIsLoggedIn( ) {
         return isNotBlank( tenantId ) && role != null;
+    }
+
+    public boolean isHumanUser( ) {
+        if ( !internalIsLoggedIn( ) ) {
+            return false;
+        }
+
+        return internalIsHumanUser( );
+    }
+
+    private boolean internalIsHumanUser( ) {
+        return role == TENANT_ADMIN || role == TENANT_MEMBER;
     }
 }

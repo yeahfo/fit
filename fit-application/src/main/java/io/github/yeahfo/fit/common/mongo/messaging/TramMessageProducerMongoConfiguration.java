@@ -1,11 +1,10 @@
 package io.github.yeahfo.fit.common.mongo.messaging;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.model.changestream.ChangeStreamDocument;
 import io.eventuate.messaging.redis.spring.producer.EventuateRedisProducer;
 import io.eventuate.tram.messaging.producer.common.MessageProducerImplementation;
 import io.eventuate.tram.spring.messaging.producer.common.TramMessagingCommonProducerConfiguration;
+import io.github.yeahfo.fit.common.jackson.Jackson;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,18 +51,12 @@ public class TramMessageProducerMongoConfiguration {
         };
         MessageListener< ChangeStreamDocument< Document >, MongoMessage > messageListener = new MessageListener<>( ) {
             private final DataProducer dataProducer = dataProducerFactory.create( );
-            private final ObjectMapper objectMapper = new ObjectMapper( );
 
             @Override
             public void onMessage( @NonNull Message< ChangeStreamDocument< Document >, MongoMessage > message ) {
-                Optional.ofNullable( message.getBody( ) ).ifPresent( then -> {
-                    try {
+                Optional.ofNullable( message.getBody( ) ).ifPresent( then ->
                         dataProducer.send( then.destination( ), then.headers( ).get( PARTITION_ID ),
-                                objectMapper.writeValueAsString( Map.of( "payload", then.payload( ), "headers", then.headers( ) ) ) );
-                    } catch ( JsonProcessingException e ) {
-                        throw new RuntimeException( e );
-                    }
-                } );
+                        Jackson.writeValueAsString( Map.of( "payload", then.payload( ), "headers", then.headers( ) ) ) ) );
             }
 
         };

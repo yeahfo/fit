@@ -34,7 +34,7 @@ public class DepartmentHierarchy extends AggregateRoot {
         try {
             this.hierarchy = this.idTree.buildHierarchy( MAX_GROUP_HIERARCHY_LEVEL );//深度与group保持相同，因为可能要同步到group
         } catch ( IdNodeLevelOverflowException ex ) {
-            throw new FitException( DEPARTMENT_HIERARCHY_TOO_DEEP, "部门层级最多不能超过5层。", "tenantId", this.getTenantId( ) );
+            throw new FitException( DEPARTMENT_HIERARCHY_TOO_DEEP, "部门层级最多不能超过5层。", "tenantId", this.tenantId( ) );
         }
     }
 }

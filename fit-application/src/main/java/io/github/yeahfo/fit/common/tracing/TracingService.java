@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FitTracingService {
+public class TracingService {
     private final Tracer tracer;
 
     public String currentTraceId( ) {

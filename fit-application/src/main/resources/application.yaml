@@ -17,6 +17,11 @@ spring:
       password: root
       authentication-database: admin
       database: local_db
+  cache:
+    type: redis
+    redis:
+      key-prefix: "Cache::"
+      time-to-live: 7d
   redis:
     redisson:
       config: |
@@ -44,10 +49,11 @@ spring:
 eventuate:
   redis:
     partitions: 1
+
 logging:
   level:
-#    io.eventuate: warn
-#    io.eventuate.messaging.redis.spring.producer.EventuateRedisProducer: info
+    #    io.eventuate: warn
+    #    io.eventuate.messaging.redis.spring.producer.EventuateRedisProducer: info
     org.springframework.data.mongodb.core.MongoTemplate: debug
     io.netty.resolver.dns.DnsServerAddressStreamProviders: error
-    org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport: warn
+

@@ -3,6 +3,7 @@ package io.github.yeahfo.fit.core.member.infrastructure;
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
+import static io.github.yeahfo.fit.core.common.utils.FitConstants.MEMBER_CACHE;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -40,6 +42,7 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    @Cacheable( value = MEMBER_CACHE, key = "#id", unless = "#result == null" )
     public Optional< Member > findById( String id ) {
         return implementation.findById( id );
     }

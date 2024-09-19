@@ -1,11 +1,14 @@
 package io.github.yeahfo.fit.core.common.exception;
 
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+@Getter
 public class FitException extends RuntimeException {
 
     private final ErrorCode code;

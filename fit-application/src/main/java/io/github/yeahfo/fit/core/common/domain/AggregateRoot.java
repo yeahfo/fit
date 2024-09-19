@@ -2,8 +2,6 @@ package io.github.yeahfo.fit.core.common.domain;
 
 import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.utils.Identified;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
@@ -14,32 +12,38 @@ import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank
 import static java.time.Instant.now;
 import static java.util.Objects.requireNonNull;
 import static lombok.AccessLevel.PRIVATE;
-import static lombok.AccessLevel.PROTECTED;
 
-
-@Getter
-@NoArgsConstructor( access = PROTECTED )
 public abstract class AggregateRoot implements Identified< String > {
     private static final int MAX_OPS_LOG_SIZE = 20;
-    private String id;
-    private String tenantId;
-    private Instant createdAt;
-    private String createdBy;
-    private String creator;
-    private Instant updatedAt;
-    private String updatedBy;
-    private String updater;
-    private LinkedList< OpsLog > opsLogs;
+    protected String id;
+    protected String tenantId;
+    protected Instant createdAt;
+    protected String createdBy;
+    protected String creator;
+    protected Instant updatedAt;
+    protected String updatedBy;
+    protected String updater;
+    protected LinkedList< OpsLog > opsLogs;
+
 
     /**
      * Version number, implementing optimistic locking.
      */
-    @Setter(PRIVATE)
-    private Long version;
+    @Setter( PRIVATE )
+    protected Long version;
+
+    @SuppressWarnings( "unused" )
+    protected AggregateRoot( ) {
+
+    }
 
     @Override
     public String identifier( ) {
         return id;
+    }
+
+    public String tenantId( ) {
+        return tenantId;
     }
 
     protected AggregateRoot( String id, User user ) {

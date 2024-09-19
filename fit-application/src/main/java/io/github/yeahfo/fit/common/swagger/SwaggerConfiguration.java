@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toMap;
+import static org.springframework.security.config.Elements.JWT;
 
 @Configuration
 @ConditionalOnProperty( name = "springdoc.api-docs.enabled", matchIfMissing = true )
@@ -25,9 +26,9 @@ public class SwaggerConfiguration {
     public static final String AUTHORIZATION_BEARER_JWT = "AuthorizationBearerJWT";
     public static final String STRING = String.class.getSimpleName( ).toLowerCase( );
     public static final Schema< ? > TOKEN_SCHEMA = new Schema<>( )
-            .required( List.of( "access_token", "expires_in", "refresh_token", "refresh_expires_in", "token_type" ) )
-            .name( "JwtTokenResponse" )
-            .title( "JwtTokenResponse" )
+            .required( List.of( "token" ) )
+            .name( "TokenResponse" )
+            .title( "TokenResponse" )
             .description( "token information" )
             .addProperty( "token", new Schema<>( ).description( "Access token value" ).type( STRING ) );
 
@@ -37,7 +38,7 @@ public class SwaggerConfiguration {
                 .name( AUTHORIZATION_BEARER_JWT )
                 .type( SecurityScheme.Type.HTTP )
                 .scheme( "bearer" )
-                .bearerFormat( "JWT" )
+                .bearerFormat( JWT )
                 .description( """
                         *Carry 'HTTP' request header 'Authorization' : 'Bearer' 'JSON_WEB_TOKEN_VALUE'*
                         ##### e.g:
