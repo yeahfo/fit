@@ -8,12 +8,19 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static java.util.Locale.CHINA;
 
 public interface FitConstants {
+    interface Profiles {
+        String prod = "prod";
+        String production = "production";
+        String dev = "dev";
+        String development = "development";
+    }
+
     String CHINA_TIME_ZONE = "Asia/Shanghai";
     String AUTH_COOKIE_NAME = "fittoken";
     String NO_TENANT_ID = "NO_TENANT_ID";
-    DateTimeFormatter FIT_DATE_TIME_FORMATTER = ofPattern("yyyy-MM-dd HH:mm").withZone(systemDefault());
-    DateTimeFormatter FIT_DATE_FORMATTER = ofPattern("yyyy-MM-dd").withZone(systemDefault());
-    Collator CHINESE_COLLATOR = Collator.getInstance(CHINA);
+    DateTimeFormatter FIT_DATE_TIME_FORMATTER = ofPattern( "yyyy-MM-dd HH:mm" ).withZone( systemDefault( ) );
+    DateTimeFormatter FIT_DATE_FORMATTER = ofPattern( "yyyy-MM-dd" ).withZone( systemDefault( ) );
+    Collator CHINESE_COLLATOR = Collator.getInstance( CHINA );
     int MAX_PER_PAGE_CONTROL_SIZE = 20;
     int MAX_APP_MANAGER_SIZE = 10;
     int MAX_PER_APP_PAGE_SIZE = 20;

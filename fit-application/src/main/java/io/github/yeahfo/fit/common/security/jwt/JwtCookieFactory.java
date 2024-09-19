@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 import static io.github.yeahfo.fit.core.common.utils.FitConstants.AUTH_COOKIE_NAME;
+import static io.github.yeahfo.fit.core.common.utils.FitConstants.Profiles.prod;
+import static io.github.yeahfo.fit.core.common.utils.FitConstants.Profiles.production;
 import static java.util.Arrays.asList;
 
 @Component
@@ -20,7 +22,7 @@ public class JwtCookieFactory {
 
     public Cookie newJwtCookie( String jwt ) {
         List< String > activeProfiles = asList( environment.getActiveProfiles( ) );
-        if ( activeProfiles.contains( "prod" ) || activeProfiles.contains( "production" ) ) {
+        if ( activeProfiles.contains( prod ) || activeProfiles.contains( production ) ) {
             return newProdCookie( jwt );
         }
         return newNonProdCookie( jwt );

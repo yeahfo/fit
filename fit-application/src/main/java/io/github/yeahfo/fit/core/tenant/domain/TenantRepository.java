@@ -4,4 +4,6 @@ import io.github.yeahfo.fit.core.common.domain.AggregateRootRepository;
 
 public interface TenantRepository extends AggregateRootRepository< Tenant, String > {
     boolean existsById( String id );
+
+    PackagesStatus packagesStatusOf( String tenantId );
 }

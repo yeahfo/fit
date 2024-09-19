@@ -75,4 +75,8 @@ public class Member extends AggregateRoot {
                     mapOf( "memberId", this.identifier( ), "tenantId", this.tenantId( ) ) );
         }
     }
+
+    public User toUser( ) {
+        return User.humanUser( id, name, tenantId, role );
+    }
 }

@@ -3,6 +3,7 @@ package io.github.yeahfo.fit.core.tenant.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -14,10 +15,22 @@ import static java.time.ZoneId.systemDefault;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static lombok.AccessLevel.PRIVATE;
 
+@Getter
 @EqualsAndHashCode
 @Builder( access = PRIVATE )
 @AllArgsConstructor( access = PRIVATE )
 public class ResourceUsage {
+    private long appCount;//已创建应用总数
+    private long memberCount;//已创建成员总数
+    private long departmentCount;//已创建的部门数
+    private float storage;//已使用的存储占用量(GB)
+    private long plateCount;//已创建码牌总数
+    private SmsSentCount smsSentCount;//本月短信发送量
+
+    private Map< String, Integer > qrCountPerApp;//每个应用对应的QR数量，appId -> qr count
+    private Map< String, Integer > groupCountPerApp;//每个应用对应的group数量，appId -> group count
+    private Map< String, Integer > submissionCountPerApp;//每个应用的提交数量，appId -> submission count
+
     private static class SmsSentCount {
         private static final DateTimeFormatter MONTH_FORMATTER = ofPattern( "yyyy-MM" ).withZone( systemDefault( ) );
         private String month;
@@ -45,17 +58,6 @@ public class ResourceUsage {
         }
     }
 
-    private long appCount;//已创建应用总数
-    private long memberCount;//已创建成员总数
-    private long departmentCount;//已创建的部门数
-    private float storage;//已使用的存储占用量(GB)
-    private long plateCount;//已创建码牌总数
-    private SmsSentCount smsSentCount;//本月短信发送量
-
-    private Map< String, Integer > qrCountPerApp;//每个应用对应的QR数量，appId -> qr count
-    private Map< String, Integer > groupCountPerApp;//每个应用对应的group数量，appId -> group count
-    private Map< String, Integer > submissionCountPerApp;//每个应用的提交数量，appId -> submission count
-
     public static ResourceUsage init( ) {
         return ResourceUsage.builder( )
                 .appCount( 0 )
@@ -74,4 +76,11 @@ public class ResourceUsage {
         this.memberCount = memberCount;
     }
 
+    public int getSmsSentCountForCurrentMonth( ) {
+        return smsSentCount.getSmsSentCountForCurrentMonth( );
+    }
+
+    public void increaseSmsSentCountForCurrentMonth( ) {
+        smsSentCount.increaseSentCountForCurrentMonth( );
+    }
 }

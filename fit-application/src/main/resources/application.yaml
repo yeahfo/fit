@@ -45,7 +45,26 @@ spring:
         nettyThreads: 32
         codec: !<org.redisson.codec.Kryo5Codec> {}
         transportMode: "NIO"
-
+  mail:
+    host: smtp.qq.com
+    port: 465
+    username: masked
+    password: masked
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            enable: true
+  messages:
+    ali-yun:
+      sms-sign-name: masked
+      sms-template-code: masked
+      access-key: masked
+      secret: masked
 eventuate:
   redis:
     partitions: 1

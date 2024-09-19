@@ -13,15 +13,15 @@ import static io.github.yeahfo.fit.core.plan.domain.PlanType.*;
 @Builder
 public record Plan(
         PlanType type,
-        int maxAppCount,//应用数量
-        int maxQrCount,//实例总量
-        int maxSubmissionCount,//提交总量
-        int maxDepartmentCount,//部门总量
-        int maxGroupCountPerApp,//单个应用下group数量
-        int maxMemberCount,//成员数量
+        long maxAppCount,//应用数量
+        long maxQrCount,//实例总量
+        long maxSubmissionCount,//提交总量
+        long maxDepartmentCount,//部门总量
+        long maxGroupCountPerApp,//单个应用下group数量
+        long maxMemberCount,//成员数量
         float maxStorage,//上传文件容量，单位GB
-        int maxSmsCountPerMonth,//每月短信用量
-        int maxVideoTrafficPerMonth,//每月最大视频播放流量，单位GB
+        long maxSmsCountPerMonth,//每月短信用量
+        long maxVideoTrafficPerMonth,//每月最大视频播放流量，单位GB
 
 
         Set< ControlType > supportedControlTypes,//可用的控件类型

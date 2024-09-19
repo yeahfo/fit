@@ -25,7 +25,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 
 @Getter
-@NoArgsConstructor(access = PRIVATE)
+@NoArgsConstructor( access = PRIVATE )
 public class Tenant extends AggregateRoot {
     private static final Set< String > FORBIDDEN_SUBDOMAIN_PREFIXES = Set.of( "www", "ww", "help", "helps", "api", "apis", "image", "images",
             "doc", "docs", "blog", "blogs", "admin", "administrator", "ops", "kibana", "console", "consoles", "manager", "managers",
@@ -70,5 +70,13 @@ public class Tenant extends AggregateRoot {
     public ResultWithDomainEvents< Tenant, TenantDomainEvent > updateMemberCount( long memberCount, User user ) {
         this.resourceUsage.updateMemberCount( memberCount );
         return new ResultWithDomainEvents<>( this, new TenantResourceUsageUpdatedEvent( user ) );
+    }
+
+    public void useSms( ) {
+        this.resourceUsage.increaseSmsSentCountForCurrentMonth( );
+
+        if ( this.resourceUsage.getSmsSentCountForCurrentMonth( ) > this.packages.effectiveMaxSmsCountPerMonth( ) ) {
+            this.packages.tryUseExtraRemainSms( );
+        }
     }
 }

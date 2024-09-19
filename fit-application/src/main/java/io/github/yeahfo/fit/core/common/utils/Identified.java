@@ -19,4 +19,8 @@ public interface Identified< Identifier > {
     static String newDepartmentHierarchyId( ) {
         return "DHC" + newSnowflakeId( );
     }
+
+    static String newVerificationCodeId( ) {
+        return "VRC" + newSnowflakeId( );
+    }
 }

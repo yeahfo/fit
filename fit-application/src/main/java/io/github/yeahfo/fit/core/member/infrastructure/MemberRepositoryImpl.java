@@ -32,6 +32,27 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    public Optional< Member > findByMobileOrEmail( String mobileOrEmail ) {
+        return implementation.findByMobileOrEmail( mobileOrEmail, mobileOrEmail );
+    }
+
+    @Override
+    public boolean existsByMobileOrEmail( String mobileOrEmail ) {
+        requireNonBlank( mobileOrEmail, "Mobile or email must not be blank." );
+        return implementation.existsByMobileOrEmail( mobileOrEmail, mobileOrEmail );
+    }
+
+    @Override
+    public boolean existsByMobile( String mobile ) {
+        return implementation.existsByMobile( mobile );
+    }
+
+    @Override
+    public boolean existsByEmail( String email ) {
+        return implementation.existsByEmail( email );
+    }
+
+    @Override
     public Member save( Member member ) {
         return implementation.save( member );
     }
