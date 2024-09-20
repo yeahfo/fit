@@ -175,7 +175,7 @@ public class Packages {
         return effectivePlan( ).hideBottomMryLogo( );
     }
 
-    public int effectiveMaxMemberCount( ) {
+    public long effectiveMaxMemberCount( ) {
         return effectivePlan( ).maxMemberCount( ) + extraMemberCount;
     }
 
@@ -183,27 +183,27 @@ public class Packages {
         return effectivePlan( ).maxStorage( ) + extraStorage;
     }
 
-    public int effectiveMaxSmsCountPerMonth( ) {
+    public long effectiveMaxSmsCountPerMonth( ) {
         return effectivePlan( ).maxSmsCountPerMonth( );
     }
 
-    public int effectiveMaxAppCount( ) {
+    public long effectiveMaxAppCount( ) {
         return effectivePlan( ).maxAppCount( );
     }
 
-    public int effectiveMaxDepartmentCount( ) {
+    public long effectiveMaxDepartmentCount( ) {
         return effectivePlan( ).maxDepartmentCount( );
     }
 
-    public int effectiveMaxGroupCountPerApp( ) {
+    public long effectiveMaxGroupCountPerApp( ) {
         return effectivePlan( ).maxGroupCountPerApp( );
     }
 
-    public int effectiveMaxQrCount( ) {
+    public long effectiveMaxQrCount( ) {
         return effectivePlan( ).maxQrCount( );
     }
 
-    public int effectiveMaxSubmissionCount( ) {
+    public long effectiveMaxSubmissionCount( ) {
         return effectivePlan( ).maxSubmissionCount( );
     }
 

@@ -17,7 +17,7 @@ public record PackagesStatus(
     public static final int MAX_PLATE_SIZE = 100000000;
 
     public boolean isMaxMemberReached( ) {
-        int maxAllowedMemberCount = packages.effectiveMaxMemberCount( );
+        long maxAllowedMemberCount = packages.effectiveMaxMemberCount( );
         long currentMemberCount = resourceUsage.getMemberCount( );
         return currentMemberCount >= maxAllowedMemberCount;
     }
@@ -27,7 +27,7 @@ public record PackagesStatus(
             return false;
         }
 
-        int maxAllowedAppCount = packages.effectiveMaxAppCount( );
+        long maxAllowedAppCount = packages.effectiveMaxAppCount( );
         long currentAppCount = resourceUsage.getAppCount( );
         return currentAppCount >= maxAllowedAppCount;
     }
@@ -81,7 +81,7 @@ public record PackagesStatus(
     }
 
     public long validateImportMembers( ) {
-        int maxAllowedMemberCount = packages.effectiveMaxMemberCount( );
+        long maxAllowedMemberCount = packages.effectiveMaxMemberCount( );
         long currentMemberCount = resourceUsage.getMemberCount( );
 
         if ( currentMemberCount >= maxAllowedMemberCount ) {

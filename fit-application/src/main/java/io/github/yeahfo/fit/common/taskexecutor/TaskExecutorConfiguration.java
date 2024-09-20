@@ -17,7 +17,7 @@ public class TaskExecutorConfiguration {
         executor.setMaxPoolSize( 100 );
         executor.setQueueCapacity( 500 );
         executor.initialize( );
-        executor.setThreadNamePrefix( "primary-taskExecutor-" );
+        executor.setThreadNamePrefix( "primary-task-" );
         return executor;
     }
 
@@ -28,7 +28,7 @@ public class TaskExecutorConfiguration {
         executor.setMaxPoolSize( 100 );
         executor.setQueueCapacity( 500 );
         executor.initialize( );
-        executor.setThreadNamePrefix( "access-qr-" );
+        executor.setThreadNamePrefix( "acc-qr-task" );
         return executor;
     }
 
