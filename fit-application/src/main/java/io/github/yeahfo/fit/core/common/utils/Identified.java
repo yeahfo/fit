@@ -16,6 +16,14 @@ public interface Identified< Identifier > {
         return count != collection.size( );
     }
 
+    static String newTenantId( ) {
+        return "TNT" + newSnowflakeId( );
+    }
+
+    static String newMemberId( ) {
+        return "MBR" + newSnowflakeId( );
+    }
+
     static String newDepartmentHierarchyId( ) {
         return "DHC" + newSnowflakeId( );
     }

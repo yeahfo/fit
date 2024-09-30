@@ -154,13 +154,17 @@
     <repositories>
         <repository>
             <id>repo</id>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
         </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
             <id>repo</id>
-            <url>https://maven.aliyun.com/repository/public</url>
+            <url>https://maven.aliyun.com/repository/central</url>
         </pluginRepository>
     </pluginRepositories>
 

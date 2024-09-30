@@ -39,6 +39,9 @@ public class Member extends AggregateRoot {
         return role;
     }
 
+    protected Member( ) {
+    }
+
     private Member( String mobile, String email, String password, User user ) {
         super( user.memberId( ), user );
         this.name = user.name( );

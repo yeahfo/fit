@@ -16,14 +16,14 @@
             <dependency>
                 <groupId>io.eventuate.platform</groupId>
                 <artifactId>eventuate-platform-dependencies</artifactId>
-                <version>2023.1.RELEASE</version>
+                <version>2024.0.RELEASE</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>io.eventuate.messaging.redis</groupId>
                 <artifactId>eventuate-messaging-redis-spring-producer</artifactId>
-                <version>0.16.0.RELEASE</version>
+                <version>0.17.0.RELEASE</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>

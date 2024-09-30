@@ -15,6 +15,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.List;
 
 import static org.springframework.http.HttpMethod.*;
 
@@ -86,7 +89,16 @@ public class SecurityConfiguration {
                         AuthorizationFilter.class )
                 .addFilterBefore( new MDCFilter( ), ExceptionTranslationFilter.class )
                 .httpBasic( AbstractHttpConfigurer::disable )
-                .cors( AbstractHttpConfigurer::disable )
+                .cors( cors -> cors.configurationSource( request -> {
+                            CorsConfiguration config = new CorsConfiguration( );
+                            config.addAllowedOriginPattern( "*" );
+                            config.setAllowedMethods( List.of( "GET", "POST", "PUT", "DELETE", "OPTIONS" ) );
+                            config.setAllowCredentials( true );
+                            config.addAllowedHeader( "*" );
+                            config.setExposedHeaders( List.of( "Authorization", "Cache-Control", "Content-Type" ) );
+                            return config;
+                        }
+                ) )
                 .anonymous( customizer -> customizer.authenticationFilter( new JwtAnonymousAuthenticationFilter( ) ) )
                 .csrf( AbstractHttpConfigurer::disable )
                 .servletApi( AbstractHttpConfigurer::disable )
