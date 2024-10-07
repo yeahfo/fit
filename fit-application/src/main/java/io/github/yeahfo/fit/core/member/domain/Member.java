@@ -82,4 +82,12 @@ public class Member extends AggregateRoot {
     public User toUser( ) {
         return User.humanUser( id, name, tenantId, role );
     }
+
+    public String password( ) {
+        return password;
+    }
+
+    public void recordFailedLogin( ) {
+        this.failedLoginCount.recordFailedLogin( );
+    }
 }

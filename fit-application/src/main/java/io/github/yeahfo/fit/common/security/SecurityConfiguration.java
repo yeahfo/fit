@@ -30,7 +30,7 @@ public class SecurityConfiguration {
     private final JwtService jwtService;
     private final TracingService tracingService;
     private final IPCookieUpdater ipCookieUpdater;
-    private final JwtCookieFactory jwtCookieFactory;
+    private final CookieFactory cookieFactory;
     private final AccessDeniedHandler accessDeniedHandler;
     private final AuthenticationEntryPoint authenticationEntryPoint;
     private final JwtAuthenticationProvider jwtAuthenticationProvider;
@@ -85,7 +85,7 @@ public class SecurityConfiguration {
                         .authenticationEntryPoint( authenticationEntryPoint ) )
                 .addFilterAfter( new JwtAuthenticationFilter( tracingService, authenticationManager ),
                         BasicAuthenticationFilter.class )
-                .addFilterAfter( new JwtAutoRefreshFilter( jwtService, ipCookieUpdater, jwtCookieFactory, properties ),
+                .addFilterAfter( new JwtAutoRefreshFilter( jwtService, ipCookieUpdater, cookieFactory, properties ),
                         AuthorizationFilter.class )
                 .addFilterBefore( new MDCFilter( ), ExceptionTranslationFilter.class )
                 .httpBasic( AbstractHttpConfigurer::disable )

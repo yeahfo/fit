@@ -1,6 +1,5 @@
-package io.github.yeahfo.fit.common.security.jwt;
+package io.github.yeahfo.fit.common.security;
 
-import io.github.yeahfo.fit.common.security.AuthorizationServerPropertiesTokenCustomizer;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -15,28 +14,28 @@ import static java.util.Arrays.asList;
 
 @Component
 @RequiredArgsConstructor
-public class JwtCookieFactory {
+public class CookieFactory {
     private final Environment environment;
     private final AuthorizationServerPropertiesTokenCustomizer properties;
 
 
-    public Cookie newJwtCookie( String jwt ) {
+    public Cookie newJwtCookie( String cookieValue ) {
         List< String > activeProfiles = asList( environment.getActiveProfiles( ) );
         if ( activeProfiles.contains( prod ) || activeProfiles.contains( production ) ) {
-            return newProdCookie( jwt );
+            return newProdCookie( cookieValue );
         }
-        return newNonProdCookie( jwt );
+        return newNonProdCookie( cookieValue );
     }
 
-    private Cookie newNonProdCookie( String jwt ) {
-        Cookie cookie = new Cookie( AUTH_COOKIE_NAME, jwt );
+    private Cookie newNonProdCookie( String cookieValue ) {
+        Cookie cookie = new Cookie( AUTH_COOKIE_NAME, cookieValue );
         cookie.setMaxAge( ( int ) properties.expiration( ).getSeconds( ) );
         cookie.setPath( "/" );
         return cookie;
     }
 
-    private Cookie newProdCookie( String jwt ) {
-        Cookie cookie = new Cookie( AUTH_COOKIE_NAME, jwt );
+    private Cookie newProdCookie( String cookieValue ) {
+        Cookie cookie = new Cookie( AUTH_COOKIE_NAME, cookieValue );
         cookie.setMaxAge( ( int ) properties.expiration( ).getSeconds( ) );
         cookie.setPath( "/" );
         cookie.setSecure( true );
@@ -50,4 +49,5 @@ public class JwtCookieFactory {
         cookie.setPath( "/" );
         return cookie;
     }
+
 }

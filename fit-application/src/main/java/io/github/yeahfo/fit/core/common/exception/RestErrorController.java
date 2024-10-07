@@ -1,6 +1,7 @@
 package io.github.yeahfo.fit.core.common.exception;
 
 import io.github.yeahfo.fit.common.tracing.TracingService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
@@ -17,6 +18,7 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.defaults;
 import static org.springframework.http.HttpStatus.valueOf;
 
 @Slf4j
+@Hidden
 @RestController
 @RequiredArgsConstructor
 public class RestErrorController implements ErrorController {

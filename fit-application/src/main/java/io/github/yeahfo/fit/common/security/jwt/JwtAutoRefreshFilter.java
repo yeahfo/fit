@@ -1,6 +1,7 @@
 package io.github.yeahfo.fit.common.security.jwt;
 
 import io.github.yeahfo.fit.common.security.AuthorizationServerPropertiesTokenCustomizer;
+import io.github.yeahfo.fit.common.security.CookieFactory;
 import io.github.yeahfo.fit.common.security.CustomizedAuthenticationToken;
 import io.github.yeahfo.fit.common.security.IPCookieUpdater;
 import io.github.yeahfo.fit.core.common.domain.user.User;
@@ -23,7 +24,7 @@ import java.time.temporal.ChronoUnit;
 public class JwtAutoRefreshFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final IPCookieUpdater ipCookieUpdater;
-    private final JwtCookieFactory jwtCookieFactory;
+    private final CookieFactory cookieFactory;
     private final AuthorizationServerPropertiesTokenCustomizer properties;
 
     @Override
@@ -38,7 +39,7 @@ public class JwtAutoRefreshFilter extends OncePerRequestFilter {
                 long timeLeft = token.getExpiration( ) - Instant.now( ).toEpochMilli( );
                 if ( timeLeft > 0 && timeLeft < properties.aheadAutoRefresh( ).get( ChronoUnit.MILLIS ) ) {
                     String jwt = jwtService.generateJwt( user.memberId( ) );
-                    Cookie cookie = jwtCookieFactory.newJwtCookie( jwt );
+                    Cookie cookie = cookieFactory.newJwtCookie( jwt );
                     response.addCookie( ipCookieUpdater.updateCookie( cookie, request ) );
                     //noinspection UastIncorrectHttpHeaderInspection
                     response.addHeader( "x-refreshed-token", jwt );

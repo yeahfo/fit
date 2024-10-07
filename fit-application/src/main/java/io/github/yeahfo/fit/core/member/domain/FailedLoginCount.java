@@ -24,7 +24,7 @@ public class FailedLoginCount {
         return FailedLoginCount.builder( ).date( now( ) ).count( 0 ).build( );
     }
 
-    private void recordFailedLogin( ) {
+    protected void recordFailedLogin( ) {
         LocalDate now = now( );
         if ( now.equals( date ) ) {
             count++;
