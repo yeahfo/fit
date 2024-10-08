@@ -58,4 +58,9 @@ public class TenantRepositoryImpl implements TenantRepository {
 
         return packagesStatus;
     }
+
+    @Override
+    public boolean existsBySubdomainPrefix( String subdomainPrefix ) {
+        return implementation.existsBySubdomainPrefix( subdomainPrefix );
+    }
 }

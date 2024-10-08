@@ -2,6 +2,8 @@ package io.github.yeahfo.fit.common.security.jwt;
 
 import io.github.yeahfo.fit.common.security.AuthorizationServerPropertiesTokenCustomizer;
 import io.github.yeahfo.fit.common.security.CustomizedAuthenticationToken;
+import io.github.yeahfo.fit.core.common.exception.ErrorCode;
+import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
 import io.jsonwebtoken.Claims;
@@ -11,10 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 
 import static io.github.yeahfo.fit.core.common.domain.user.User.humanUser;
-import static java.time.temporal.ChronoUnit.MILLIS;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +25,7 @@ public class JwtService {
     private final AuthorizationServerPropertiesTokenCustomizer properties;
 
     public String generateJwt( String memberId ) {
-        Date now = new Date( );
-        Date expirationDate = new Date( now.getTime( ) + properties.expiration( ).get( MILLIS ) );
+        Date expirationDate = new Date( Instant.now( ).plusMillis( properties.expiration( ).toMillis( ) ).toEpochMilli( ) );
         return generateJwt( memberId, expirationDate );
     }
 
@@ -44,7 +45,7 @@ public class JwtService {
         Claims claims = Jwts.parser( ).verifyWith( Keys.hmacShaKeyFor( properties.secret( ).getBytes( StandardCharsets.UTF_8 ) ) ).build( )
                 .parseSignedClaims( jwt ).getPayload( );
         String memberId = claims.getSubject( );
-        Member member = memberRepository.find( memberId );
+        Member member = memberRepository.findById( memberId ).orElseThrow( ( ) -> new FitException( ErrorCode.MEMBER_NOT_FOUND, "无法获得登录成员信息." ) );
         member.checkActive( );
         long expiration = claims.getExpiration( ).getTime( );
         return new CustomizedAuthenticationToken(

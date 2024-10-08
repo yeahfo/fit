@@ -16,7 +16,7 @@ public class VerificationCodeChecker {
         this.verificationCodeRepository = verificationCodeRepository;
     }
 
-    // REQUIRES_NEW表示无论最终结果成败，只要check了一次，便标记使用一次
+    // REQUIRES_NEW 表示无论最终结果成败，只要check了一次，便标记使用一次
     @Transactional( propagation = REQUIRES_NEW )
     public void check( String mobileEmail, String code, VerificationCodeType type ) {
         VerificationCode verificationCode = verificationCodeRepository.findByMobileEmailAndCodeAndType( mobileEmail, code, type )

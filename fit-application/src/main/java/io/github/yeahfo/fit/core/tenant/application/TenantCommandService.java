@@ -6,6 +6,7 @@ import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
 import io.github.yeahfo.fit.core.plan.domain.PlanType;
 import io.github.yeahfo.fit.core.tenant.domain.Tenant;
+import io.github.yeahfo.fit.core.tenant.domain.TenantDomainService;
 import io.github.yeahfo.fit.core.tenant.domain.TenantRepository;
 import io.github.yeahfo.fit.core.tenant.domain.events.TenantDomainEvent;
 import io.github.yeahfo.fit.core.tenant.domain.events.TenantDomainEventPublisher;
@@ -25,6 +26,7 @@ public class TenantCommandService {
     private final RateLimiter rateLimiter;
     private final TenantRepository tenantRepository;
     private final MemberRepository memberRepository;
+    private final TenantDomainService tenantDomainService;
     private final TenantDomainEventPublisher domainEventPublisher;
 
     @Transactional
@@ -41,7 +43,7 @@ public class TenantCommandService {
     @Transactional
     public void updateTenantPlanType( String tenantId, PlanType planType, Instant expireAt, User user ) {
         rateLimiter.applyFor( tenantId, "Tenant:UpdatePlanType", 5 );
-        Tenant tenant = tenantRepository.find( tenantId );
+        Tenant tenant = tenantRepository.findIdentifier( tenantId );
         ResultWithDomainEvents< Tenant, TenantDomainEvent > resultEvents = tenant.updatePlanType( planType, expireAt, user );
         tenantRepository.save( tenant );
         domainEventPublisher.publish( tenant, resultEvents.events );
@@ -56,5 +58,49 @@ public class TenantCommandService {
             domainEventPublisher.publish( tenant, domainEvents.events );
             log.info( "Counted all {} members for tenant[{}].", count, id );
         } );
+    }
+
+    @Transactional
+    public void updateTenantBaseSetting( UpdateTenantBaseSettingCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:UpdateBaseSetting", 5 );
+
+        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        ResultWithDomainEvents< Tenant, TenantDomainEvent > resultWithDomainEvents = tenant.updateBaseSetting(
+                command.name( ), command.loginBackground( ), user );
+        tenantRepository.save( tenant );
+        this.domainEventPublisher.publish( tenant, resultWithDomainEvents.events );
+        log.info( "Updated base setting for tenant[{}].", tenantId );
+    }
+
+    @Transactional
+    public void updateTenantLogo( UpdateTenantLogoCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:UpdateLogo", 5 );
+
+        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        tenant.packagesStatus( ).validateUpdateLogo( );
+
+        tenant.updateLogo( command.logo( ), user );
+        tenantRepository.save( tenant );
+        log.info( "Updated logo for tenant[{}].", tenantId );
+    }
+
+    @Transactional
+    public void updateTenantSubdomain( UpdateTenantSubdomainCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:UpdateSubdomain", 5 );
+
+        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        tenant.packagesStatus( ).validateUpdateSubdomain( );
+
+        ResultWithDomainEvents< Tenant, TenantDomainEvent > resultWithDomainEvents = tenantDomainService.updateSubdomain(
+                tenant, command.subdomainPrefix( ), user );
+        tenantRepository.save( tenant );
+        this.domainEventPublisher.publish( tenant, resultWithDomainEvents.events );
+        log.info( "Updated subdomain for tenant[{}] with prefix[{}].", tenantId, command.subdomainPrefix( ) );
     }
 }

@@ -4,12 +4,10 @@ import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import io.github.yeahfo.fit.core.common.domain.AggregateRoot;
 import io.github.yeahfo.fit.core.common.domain.UploadedFile;
 import io.github.yeahfo.fit.core.common.domain.user.User;
+import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.order.domain.delivery.Consignee;
 import io.github.yeahfo.fit.core.plan.domain.PlanType;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantCreatedEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantDomainEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantPlanUpdatedEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantResourceUsageUpdatedEvent;
+import io.github.yeahfo.fit.core.tenant.domain.events.*;
 import io.github.yeahfo.fit.core.tenant.domain.invoice.InvoiceTitle;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,11 +15,17 @@ import lombok.NoArgsConstructor;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
+import static io.github.yeahfo.fit.core.common.exception.ErrorCode.FORBIDDEN_SUBDOMAIN_PREFIX;
+import static io.github.yeahfo.fit.core.common.exception.ErrorCode.SUBDOMAIN_UPDATED_TOO_OFTEN;
+import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
+import static java.time.Instant.now;
 import static java.time.LocalDate.ofInstant;
 import static java.time.ZoneId.systemDefault;
 import static lombok.AccessLevel.PRIVATE;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
 @Getter
@@ -78,5 +82,49 @@ public class Tenant extends AggregateRoot {
         if ( this.resourceUsage.getSmsSentCountForCurrentMonth( ) > this.packages.effectiveMaxSmsCountPerMonth( ) ) {
             this.packages.tryUseExtraRemainSms( );
         }
+    }
+
+    public ResultWithDomainEvents< Tenant, TenantDomainEvent > updateBaseSetting( String name, UploadedFile loginBackground, User user ) {
+        this.name = name;
+        this.loginBackground = loginBackground;
+        addOpsLog( "更新基本设置", user );
+        return new ResultWithDomainEvents<>( this, new TenantBaseSettingUpdatedEvent( user ) );
+    }
+
+    public PackagesStatus packagesStatus( ) {
+        return PackagesStatus.builder( ).id( this.identifier( ) ).packages( this.packages ).resourceUsage( this.resourceUsage ).build( );
+    }
+
+    public void updateLogo( UploadedFile logo, User user ) {
+        if ( Objects.equals( this.logo, logo ) ) {
+            return;
+        }
+        this.logo = logo;
+        addOpsLog( "更新Logo", user );
+    }
+
+    public ResultWithDomainEvents< Tenant, TenantDomainEvent > updateSubdomain( String newSubdomainPrefix, User user ) {
+        if ( isNotBlank( newSubdomainPrefix ) && FORBIDDEN_SUBDOMAIN_PREFIXES.contains( newSubdomainPrefix ) ) {
+            throw new FitException( FORBIDDEN_SUBDOMAIN_PREFIX, "不允许使用该子域名。", mapOf( "subdomainPrefix", newSubdomainPrefix ) );
+        }
+        List< TenantDomainEvent > events = new ArrayList<>( );
+        String oldSubdomainPrefix = this.subdomainPrefix;
+        if ( !Objects.equals( oldSubdomainPrefix, newSubdomainPrefix ) ) {
+            if ( !subdomainUpdatable( ) ) {
+                throw new FitException( SUBDOMAIN_UPDATED_TOO_OFTEN,
+                        "子域名30天内之内只能更新一次。", mapOf( "subdomainPrefix", newSubdomainPrefix ) );
+            }
+
+            events.add( new TenantSubdomainUpdatedEvent( oldSubdomainPrefix, newSubdomainPrefix, user ) );
+            this.subdomainPrefix = newSubdomainPrefix;
+            this.subdomainReady = false;
+            this.subdomainUpdatedAt = now( );
+            addOpsLog( "更新域名前缀为" + newSubdomainPrefix, user );
+        }
+        return new ResultWithDomainEvents<>( this, events );
+    }
+
+    public boolean subdomainUpdatable( ) {
+        return subdomainUpdatedAt == null || now( ).minusSeconds( 30 * 24 * 3600L ).isAfter( subdomainUpdatedAt );
     }
 }

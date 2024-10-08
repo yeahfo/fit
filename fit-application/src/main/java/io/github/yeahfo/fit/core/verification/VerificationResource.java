@@ -11,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static io.github.yeahfo.fit.common.swagger.SwaggerConfiguration.AUTHORIZATION_BEARER_JWT;
+import static io.github.yeahfo.fit.common.swagger.SwaggerConfiguration.AUTHORIZATION_BEARER_TOKEN;
 import static io.github.yeahfo.fit.core.common.application.IdentifierResponse.identifier;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -50,7 +50,7 @@ public class VerificationResource {
     }
 
     @ResponseStatus( CREATED )
-    @SecurityRequirement( name = AUTHORIZATION_BEARER_JWT )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
     @PostMapping( value = "/for-change-mobile", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE )
     public IdentifierResponse createVerificationCodeForChangeMobile(
             @RequestBody @Valid CreateChangeMobileVerificationCodeCommand command,
@@ -60,7 +60,7 @@ public class VerificationResource {
     }
 
     @ResponseStatus( CREATED )
-    @SecurityRequirement( name = AUTHORIZATION_BEARER_JWT )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
     @PostMapping( value = "/for-identity-mobile", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE )
     public IdentifierResponse createVerificationCodeForIdentifyMobile(
             @RequestBody @Valid IdentifyMobileVerificationCodeCommand command,

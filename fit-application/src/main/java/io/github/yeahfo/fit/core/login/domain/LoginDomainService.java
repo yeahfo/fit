@@ -6,11 +6,13 @@ import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberDomainService;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
+import io.github.yeahfo.fit.core.verification.domain.VerificationCodeChecker;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import static io.github.yeahfo.fit.core.common.exception.FitException.authenticationException;
+import static io.github.yeahfo.fit.core.verification.domain.VerificationCodeType.LOGIN;
 
 @Slf4j
 @Component
@@ -20,6 +22,7 @@ public class LoginDomainService {
     private final PasswordEncoder passwordEncoder;
     private final MemberRepository memberRepository;
     private final MemberDomainService memberDomainService;
+    private final VerificationCodeChecker verificationCodeChecker;
 
     public String loginWithMobileOrEmail( String mobileOrEmail,
                                           String password ) {
@@ -33,5 +36,18 @@ public class LoginDomainService {
 
         member.checkActive( );
         return jwtService.generateJwt( member.identifier( ) );
+    }
+
+    public String loginWithVerificationCode( String mobileOrEmail, String verificationCode ) {
+        verificationCodeChecker.check( mobileOrEmail, verificationCode, LOGIN );
+        Member member = memberRepository.findByMobileOrEmail( mobileOrEmail )
+                .orElseThrow( FitException::authenticationException );
+
+        member.checkActive( );
+        return jwtService.generateJwt( member.identifier( ) );
+    }
+
+    public String refreshToken( String memberId ) {
+        return jwtService.generateJwt( memberId );
     }
 }

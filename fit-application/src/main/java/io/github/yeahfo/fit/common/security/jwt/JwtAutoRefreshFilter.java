@@ -18,7 +18,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 @RequiredArgsConstructor
 public class JwtAutoRefreshFilter extends OncePerRequestFilter {
@@ -37,7 +36,7 @@ public class JwtAutoRefreshFilter extends OncePerRequestFilter {
             User user = token.getUser( );
             if ( user.isHumanUser( ) ) {
                 long timeLeft = token.getExpiration( ) - Instant.now( ).toEpochMilli( );
-                if ( timeLeft > 0 && timeLeft < properties.aheadAutoRefresh( ).get( ChronoUnit.MILLIS ) ) {
+                if ( timeLeft > 0 && timeLeft < properties.aheadAutoRefresh( ).toMillis( ) ) {
                     String jwt = jwtService.generateJwt( user.memberId( ) );
                     Cookie cookie = cookieFactory.newJwtCookie( jwt );
                     response.addCookie( ipCookieUpdater.updateCookie( cookie, request ) );

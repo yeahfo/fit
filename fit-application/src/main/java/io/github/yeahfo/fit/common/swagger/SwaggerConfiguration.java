@@ -23,7 +23,7 @@ import static org.springframework.security.config.Elements.JWT;
 @Configuration
 @ConditionalOnProperty( name = "springdoc.api-docs.enabled", matchIfMissing = true )
 public class SwaggerConfiguration {
-    public static final String AUTHORIZATION_BEARER_JWT = "AuthorizationBearerJWT";
+    public static final String AUTHORIZATION_BEARER_TOKEN = "AuthorizationBearerToken";
     public static final String STRING = String.class.getSimpleName( ).toLowerCase( );
     public static final Schema< ? > TOKEN_SCHEMA = new Schema<>( )
             .required( List.of( "token" ) )
@@ -34,13 +34,13 @@ public class SwaggerConfiguration {
 
     @Bean
     OpenAPI openAPI( ) {
-        SecurityScheme JWT_SECURITY_SCHEME = new SecurityScheme( )
-                .name( AUTHORIZATION_BEARER_JWT )
+        SecurityScheme TOKEN_SECURITY_SCHEME = new SecurityScheme( )
+                .name( AUTHORIZATION_BEARER_TOKEN )
                 .type( SecurityScheme.Type.HTTP )
                 .scheme( "bearer" )
                 .bearerFormat( JWT )
                 .description( """
-                        *Carry 'HTTP' request header 'Authorization' : 'Bearer' 'JSON_WEB_TOKEN_VALUE'*
+                        *Carry 'HTTP' request header 'Authorization' : 'Bearer' 'TOKEN_VALUE'*
                         ##### e.g:
                         ```shell
                         POST /api/v1/users HTTP/1.1 \s
@@ -56,7 +56,7 @@ public class SwaggerConfiguration {
                         .contact( new Contact( ).name( "FIT" ).url( "https://github.com/yeahfo/fit" )
                                 .email( "fit@qq.com" ) ) )
                 .components( new Components( )
-                                .addSecuritySchemes( JWT_SECURITY_SCHEME.getName( ), JWT_SECURITY_SCHEME )
+                                .addSecuritySchemes( TOKEN_SECURITY_SCHEME.getName( ), TOKEN_SECURITY_SCHEME )
                                 .addSchemas( TOKEN_SCHEMA.getName( ), TOKEN_SCHEMA )
 //                        .addSchemas( ROLE_SCHEMA.getName( ), ROLE_SCHEMA )
                 );

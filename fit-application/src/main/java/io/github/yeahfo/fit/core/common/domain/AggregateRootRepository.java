@@ -30,9 +30,9 @@ public interface AggregateRootRepository< A extends AggregateRoot, ID > {
     default void deleteAllById( Iterable< ID > ids ) {
     }
 
-    default A find( ID id ) {
-        requireNonBlank( String.valueOf( id ), "Aggregate root ID must not be blank." );
-        return findById( id ).orElseThrow( ( ) -> new FitException( AR_NOT_FOUND, "未找到资源。", mapOf( "type", getType( ).getSimpleName( ), "id", id ) ) );
+    default A findIdentifier( ID identifier ) {
+        requireNonBlank( String.valueOf( identifier ), "Aggregate root ID must not be blank." );
+        return this.findById( identifier ).orElseThrow( ( ) -> new FitException( AR_NOT_FOUND, "未找到资源。", mapOf( "type", getType( ).getSimpleName( ), "id", identifier ) ) );
     }
 
     Map< String, Class< ? > > classMapper = new HashMap<>( );

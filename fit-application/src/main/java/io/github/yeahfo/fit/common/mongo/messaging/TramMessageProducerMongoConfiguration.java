@@ -55,8 +55,11 @@ public class TramMessageProducerMongoConfiguration {
             @Override
             public void onMessage( @NonNull Message< ChangeStreamDocument< Document >, MongoMessage > message ) {
                 Optional.ofNullable( message.getBody( ) ).ifPresent( then ->
-                        dataProducer.send( then.destination( ), then.headers( ).get( PARTITION_ID ),
-                        Jackson.writeValueAsString( Map.of( "payload", then.payload( ), "headers", then.headers( ) ) ) ) );
+                        dataProducer.send(
+                                then.destination( ),
+                                then.headers( ).get( PARTITION_ID ),
+                                Jackson.writeValueAsString( Map.of( "payload", then.payload( ), "headers", then.headers( ) ) ) )
+                );
             }
 
         };

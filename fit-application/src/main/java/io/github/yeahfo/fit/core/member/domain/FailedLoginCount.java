@@ -1,9 +1,6 @@
 package io.github.yeahfo.fit.core.member.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -13,6 +10,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @Builder
 @EqualsAndHashCode
+@NoArgsConstructor( access = PRIVATE )
 @AllArgsConstructor( access = PRIVATE )
 public class FailedLoginCount {
     private static final int MAX_ALLOWED_FAILED_LOGIN_PER_DAY = 30;

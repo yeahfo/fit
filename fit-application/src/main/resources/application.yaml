@@ -65,9 +65,17 @@ spring:
       sms-template-code: masked
       access-key: masked
       secret: masked
+
 eventuate:
   redis:
     partitions: 1
+
+springdoc:
+  swagger-ui:
+    persist-authorization: true
+    default-models-expand-depth: -1
+    syntax-highlight:
+      activated: true
 
 logging:
   level:

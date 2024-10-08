@@ -1,6 +1,8 @@
 package io.github.yeahfo.fit.core.common.domain.user;
 
 import static io.github.yeahfo.fit.core.common.domain.user.Role.*;
+import static io.github.yeahfo.fit.core.common.exception.FitException.accessDeniedException;
+import static io.github.yeahfo.fit.core.common.exception.FitException.authenticationException;
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -49,5 +51,26 @@ public record User( String memberId,
 
     private boolean internalIsHumanUser( ) {
         return role == TENANT_ADMIN || role == TENANT_MEMBER;
+    }
+
+    public void checkIsTenantAdmin( ) {
+        internalCheckLoggedIn( );
+        internalCheckTenantAdmin( );
+    }
+
+    private void internalCheckLoggedIn( ) {
+        if ( !internalIsLoggedIn( ) ) {
+            throw authenticationException( );
+        }
+    }
+
+    private void internalCheckTenantAdmin( ) {
+        if ( !internalIsTenantAdmin( ) ) {
+            throw accessDeniedException( );
+        }
+    }
+
+    private boolean internalIsTenantAdmin( ) {
+        return role == TENANT_ADMIN;
     }
 }
