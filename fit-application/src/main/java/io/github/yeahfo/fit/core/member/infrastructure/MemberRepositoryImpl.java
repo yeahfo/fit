@@ -2,7 +2,9 @@ package io.github.yeahfo.fit.core.member.infrastructure;
 
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
+import io.github.yeahfo.fit.core.member.domain.TenantCachedMember;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
-import static io.github.yeahfo.fit.core.common.utils.FitConstants.MEMBER_CACHE;
+import static io.github.yeahfo.fit.core.common.utils.FitConstants.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -53,6 +55,17 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    @Cacheable( value = TENANT_MEMBERS_CACHE, key = "#tenantId" )
+    public List< TenantCachedMember > tenantCachedMembers( String tenantId ) {
+        requireNonBlank( tenantId, "Tenant ID must not be blank." );
+
+        Query query = query( where( "tenantId" ).is( tenantId ) );
+        query.fields( ).include( "name", "role", "mobile", "email", "mobileWxOpenId", "customId", "departmentIds", "active" );
+        return mongoTemplate.find( query, TenantCachedMember.class, MEMBER_COLLECTION );
+    }
+
+    @Override
+    @CacheEvict( value = TENANT_MEMBERS_CACHE, key = "#member.tenantId()" )
     public Member save( Member member ) {
         return implementation.save( member );
     }
