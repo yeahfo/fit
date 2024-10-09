@@ -83,4 +83,24 @@ public class ResourceUsage {
     public void increaseSmsSentCountForCurrentMonth( ) {
         smsSentCount.increaseSentCountForCurrentMonth( );
     }
+
+    public Map< String, Integer > qrCountPerApp( ) {
+        return qrCountPerApp;
+    }
+
+    public Map< String, Integer > groupCountPerApp( ) {
+        return groupCountPerApp;
+    }
+
+    public Map< String, Integer > submissionCountPerApp( ) {
+        return submissionCountPerApp;
+    }
+
+    public int allSubmissionCount( ) {
+        return this.submissionCountPerApp( ).values( ).stream( ).reduce( 0, Integer::sum );
+    }
+
+    public int allQrCount( ) {
+        return this.qrCountPerApp( ).values( ).stream( ).reduce( 0, Integer::sum );
+    }
 }

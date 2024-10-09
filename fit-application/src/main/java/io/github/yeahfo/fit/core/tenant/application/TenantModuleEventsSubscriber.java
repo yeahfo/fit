@@ -4,10 +4,7 @@ import io.eventuate.tram.events.subscriber.DomainEventEnvelope;
 import io.eventuate.tram.events.subscriber.DomainEventHandlers;
 import io.eventuate.tram.events.subscriber.DomainEventHandlersBuilder;
 import io.github.yeahfo.fit.core.member.domain.events.MemberDomainEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantBaseSettingUpdatedEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantCreatedEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantDomainEvent;
-import io.github.yeahfo.fit.core.tenant.domain.events.TenantUpdatedEvent;
+import io.github.yeahfo.fit.core.tenant.domain.events.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -21,14 +18,15 @@ public class TenantModuleEventsSubscriber {
                 .forAggregateType( TenantDomainEvent.aggregateType )
                 .onEvent( TenantCreatedEvent.class, this::handleTenantCreatedEvent )
                 .onEvent( TenantBaseSettingUpdatedEvent.class, this::handleTenantUpdatedEvent )
+                .onEvent( TenantInvoiceTitleUpdatedEvent.class, this::handleTenantUpdatedEvent )
                 .andForAggregateType( MemberDomainEvent.aggregateType )
                 .onEvent( MemberDomainEvent.class, this::handleMemberDomainEvent )
                 .build( );
     }
 
     private void handleTenantUpdatedEvent( DomainEventEnvelope< ? extends TenantUpdatedEvent > envelope ) {
-        System.err.println( "handleTenantUpdatedEvent: " + envelope.getAggregateId( ) );
-        System.err.println( "handleTenantUpdatedEvent: " + envelope.getEvent( ) );
+        System.err.println( "[TenantModule]....EventsSubscriber.handleTenantUpdatedEvent: " + envelope.getAggregateId( ) );
+        System.err.println( "[TenantModule]....EventsSubscriber.handleTenantUpdatedEvent: " + envelope.getEvent( ) );
     }
 
     private void handleMemberDomainEvent( DomainEventEnvelope< MemberDomainEvent > envelope ) {

@@ -24,7 +24,7 @@ import static org.springframework.security.config.Elements.JWT;
 @ConditionalOnProperty( name = "springdoc.api-docs.enabled", matchIfMissing = true )
 public class SwaggerConfiguration {
     public static final String AUTHORIZATION_BEARER_TOKEN = "AuthorizationBearerToken";
-    public static final String STRING = String.class.getSimpleName( ).toLowerCase( );
+    public static final String STRING = "string";
     public static final Schema< ? > TOKEN_SCHEMA = new Schema<>( )
             .required( List.of( "token" ) )
             .name( "TokenResponse" )

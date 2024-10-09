@@ -9,6 +9,12 @@ spring:
       enabled: true
   main:
     keep-alive: true
+  security:
+    oauth2:
+      authorizationserver:
+        token:
+          customizer:
+            ahead-auto-refresh: 55m
   data:
     mongodb:
       host: localhost

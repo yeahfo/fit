@@ -46,6 +46,22 @@ public abstract class AggregateRoot implements Identified< String > {
         return tenantId;
     }
 
+    public Instant createdAt( ) {
+        return createdAt;
+    }
+
+    public String createdBy( ) {
+        return createdBy;
+    }
+
+    public String creator( ) {
+        return creator;
+    }
+
+    public LinkedList< OpsLog > opsLogs( ) {
+        return opsLogs;
+    }
+
     protected AggregateRoot( String id, User user ) {
         requireNonBlank( id, "ID must not be blank." );
         requireNonNull( user, "User must not be null." );

@@ -6,28 +6,29 @@ import io.github.yeahfo.fit.core.common.domain.UploadedFile;
 import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.order.domain.delivery.Consignee;
+import io.github.yeahfo.fit.core.plan.domain.Plan;
 import io.github.yeahfo.fit.core.plan.domain.PlanType;
 import io.github.yeahfo.fit.core.tenant.domain.events.*;
 import io.github.yeahfo.fit.core.tenant.domain.invoice.InvoiceTitle;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
-import static io.github.yeahfo.fit.core.common.exception.ErrorCode.FORBIDDEN_SUBDOMAIN_PREFIX;
-import static io.github.yeahfo.fit.core.common.exception.ErrorCode.SUBDOMAIN_UPDATED_TOO_OFTEN;
+import static io.github.yeahfo.fit.core.common.exception.ErrorCode.*;
 import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
+import static io.github.yeahfo.fit.core.common.utils.Identified.isDuplicated;
 import static java.time.Instant.now;
 import static java.time.LocalDate.ofInstant;
 import static java.time.ZoneId.systemDefault;
+import static java.util.stream.Collectors.toList;
 import static lombok.AccessLevel.PRIVATE;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 
+@Slf4j
 @Getter
 @NoArgsConstructor( access = PRIVATE )
 public class Tenant extends AggregateRoot {
@@ -126,5 +127,69 @@ public class Tenant extends AggregateRoot {
 
     public boolean subdomainUpdatable( ) {
         return subdomainUpdatedAt == null || now( ).minusSeconds( 30 * 24 * 3600L ).isAfter( subdomainUpdatedAt );
+    }
+
+    public void refreshApiSecret( User user ) {
+        this.apiSetting.refreshApiSecret( );
+        addOpsLog( "刷新API Secret", user );
+    }
+
+    public ResultWithDomainEvents< Tenant, TenantDomainEvent > updateInvoiceTitle( InvoiceTitle title, User user ) {
+        if ( Objects.equals( title, this.invoiceTitle ) ) {
+            return new ResultWithDomainEvents<>( this );
+        }
+        this.invoiceTitle = title;
+        addOpsLog( "更新发票抬头", user );
+        return new ResultWithDomainEvents<>( this, new TenantInvoiceTitleUpdatedEvent( user ) );
+    }
+
+    public void addConsignee( Consignee consignee, User user ) {
+        if ( this.consignees.size( ) >= 5 ) {
+            throw new FitException( MAX_CONSIGNEE_REACHED, "最多只能添加5个收货人信息。", mapOf( "tenantId", this.identifier( ) ) );
+        }
+
+        this.consignees.addFirst( consignee );
+
+        if ( isDuplicated( this.consignees ) ) {
+            throw new FitException( CONSIGNEE_ID_DUPLICATED, "收货人ID重复。", mapOf( "tenantId", this.identifier( ) ) );
+        }
+
+        addOpsLog( "添加收货人(" + consignee.name( ) + ")", user );
+    }
+
+    public void updateConsignee( Consignee newConsignee, User user ) {
+        this.consignees = this.consignees.stream( )
+                .map( consignee -> Objects.equals( consignee.identifier( ), newConsignee.identifier( ) ) ? newConsignee : consignee )
+                .collect( toList( ) );
+        addOpsLog( "更新收货人(" + newConsignee.name( ) + ")", user );
+    }
+
+    public void deleteConsignee( String consigneeId, User user ) {
+        Optional< Consignee > consigneeOptional = this.consignees.stream( )
+                .filter( consignee -> Objects.equals( consignee.identifier( ), consigneeId ) ).findFirst( );
+
+        if ( consigneeOptional.isEmpty( ) ) {
+            log.warn( "No consignee[{}] found to delete, skip.", consigneeId );
+            return;
+        }
+
+        this.consignees.removeIf( consignee -> Objects.equals( consignee.identifier( ), consigneeId ) );
+        addOpsLog( "删除收货人(" + consigneeOptional.get( ).name( ) + ")", user );
+    }
+
+    public Plan currentPlan( ) {
+        return this.packages.currentPlan( );
+    }
+
+    public PlanType currentPlanType( ) {
+        return this.packages.currentPlanType( );
+    }
+
+    public boolean isPackagesExpired( ) {
+        return this.packages.isExpired( );
+    }
+
+    public Instant packagesExpiredAt( ) {
+        return this.packages.expireAt( );
     }
 }

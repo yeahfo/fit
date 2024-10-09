@@ -43,7 +43,7 @@ public class TenantCommandService {
     @Transactional
     public void updateTenantPlanType( String tenantId, PlanType planType, Instant expireAt, User user ) {
         rateLimiter.applyFor( tenantId, "Tenant:UpdatePlanType", 5 );
-        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        Tenant tenant = tenantRepository.findPresent( tenantId );
         ResultWithDomainEvents< Tenant, TenantDomainEvent > resultEvents = tenant.updatePlanType( planType, expireAt, user );
         tenantRepository.save( tenant );
         domainEventPublisher.publish( tenant, resultEvents.events );
@@ -66,7 +66,7 @@ public class TenantCommandService {
         String tenantId = user.tenantId( );
         rateLimiter.applyFor( tenantId, "Tenant:UpdateBaseSetting", 5 );
 
-        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        Tenant tenant = tenantRepository.findPresent( tenantId );
         ResultWithDomainEvents< Tenant, TenantDomainEvent > resultWithDomainEvents = tenant.updateBaseSetting(
                 command.name( ), command.loginBackground( ), user );
         tenantRepository.save( tenant );
@@ -80,7 +80,7 @@ public class TenantCommandService {
         String tenantId = user.tenantId( );
         rateLimiter.applyFor( tenantId, "Tenant:UpdateLogo", 5 );
 
-        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        Tenant tenant = tenantRepository.findPresent( tenantId );
         tenant.packagesStatus( ).validateUpdateLogo( );
 
         tenant.updateLogo( command.logo( ), user );
@@ -94,7 +94,7 @@ public class TenantCommandService {
         String tenantId = user.tenantId( );
         rateLimiter.applyFor( tenantId, "Tenant:UpdateSubdomain", 5 );
 
-        Tenant tenant = tenantRepository.findIdentifier( tenantId );
+        Tenant tenant = tenantRepository.findPresent( tenantId );
         tenant.packagesStatus( ).validateUpdateSubdomain( );
 
         ResultWithDomainEvents< Tenant, TenantDomainEvent > resultWithDomainEvents = tenantDomainService.updateSubdomain(
@@ -102,5 +102,70 @@ public class TenantCommandService {
         tenantRepository.save( tenant );
         this.domainEventPublisher.publish( tenant, resultWithDomainEvents.events );
         log.info( "Updated subdomain for tenant[{}] with prefix[{}].", tenantId, command.subdomainPrefix( ) );
+    }
+
+    @Transactional
+    public String refreshTenantApiSecret( User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:RefreshApiSecret", 5 );
+
+        Tenant tenant = tenantRepository.findPresent( tenantId );
+        tenant.packagesStatus( ).validateRefreshApiSecret( );
+
+        tenant.refreshApiSecret( user );
+        tenantRepository.save( tenant );
+        log.info( "Refreshed API secret for tenant[{}].", tenantId );
+        return tenant.getApiSetting( ).getApiSecret( );
+    }
+
+    @Transactional
+    public void updateTenantInvoiceTitle( UpdateTenantInvoiceTitleCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:UpdateInvoiceTitle", 5 );
+
+        Tenant tenant = tenantRepository.findPresent( tenantId );
+        ResultWithDomainEvents< Tenant, TenantDomainEvent > resultWithDomainEvents = tenant.updateInvoiceTitle( command
+                .title( ), user );
+        tenantRepository.save( tenant );
+        this.domainEventPublisher.publish( tenant, resultWithDomainEvents.events );
+        log.info( "Updated invoice title for tenant[{}].", tenantId );
+    }
+
+    @Transactional
+    public void addConsignee( AddConsigneeCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:AddConsignee", 5 );
+
+        Tenant tenant = tenantRepository.findPresent( tenantId );
+        tenant.addConsignee( command.consignee( ), user );
+        tenantRepository.save( tenant );
+        log.info( "Added consignee[{}] for tenant[{}].", command.consignee( ).identifier( ), tenantId );
+    }
+
+    @Transactional
+    public void updateConsignee( UpdateConsigneeCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:UpdateConsignee", 5 );
+
+        Tenant tenant = tenantRepository.findPresent( tenantId );
+        tenant.updateConsignee( command.consignee( ), user );
+        tenantRepository.save( tenant );
+        log.info( "Updated consignee[{}] for tenant[{}].", command.consignee( ).identifier( ), tenantId );
+    }
+
+    @Transactional
+    public void deleteConsignee( String consigneeId, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Tenant:DeleteConsignee", 5 );
+
+        Tenant tenant = tenantRepository.findPresent( tenantId );
+        tenant.deleteConsignee( consigneeId, user );
+        tenantRepository.save( tenant );
+        log.info( "Deleted consignee[{}] for tenant[{}].", consigneeId, tenantId );
     }
 }

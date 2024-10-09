@@ -63,4 +63,9 @@ public class TenantRepositoryImpl implements TenantRepository {
     public boolean existsBySubdomainPrefix( String subdomainPrefix ) {
         return implementation.existsBySubdomainPrefix( subdomainPrefix );
     }
+
+    @Override
+    public Tenant findBySubdomainPrefix( String subdomainPrefix ) {
+        return implementation.findBySubdomainPrefix( subdomainPrefix ).orElseThrow( ( ) -> new FitException( TENANT_NOT_FOUND, "找不到域名对应租户" ) );
+    }
 }
