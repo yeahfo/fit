@@ -73,4 +73,23 @@ public class MemberCommandService {
         log.info( "Imported {} members for tenant[{}].", response.importedCount( ), tenantId );
         return response;
     }
+
+    @Transactional
+    public void updateMember( String memberId, UpdateMemberInfoCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Member:Update", 5 );
+
+        Member member = memberRepository.findPresent( memberId );
+
+        ResultWithDomainEvents< Member, MemberDomainEvent > resultWithDomainEvents = memberDomainService.updateMember( member,
+                command.name( ),
+                command.departmentIds( ),
+                command.mobile( ),
+                command.email( ),
+                user );
+        memberRepository.save( member );
+        this.domainEventPublisher.publish( member, resultWithDomainEvents.events );
+        log.info( "Updated detail for member[{}].", memberId );
+    }
 }

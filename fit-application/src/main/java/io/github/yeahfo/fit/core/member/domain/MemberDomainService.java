@@ -71,6 +71,33 @@ public class MemberDomainService {
         return Member.create( name, departmentIds, mobile, email, passwordEncoder.encode( password ), customId, user );
     }
 
+    public ResultWithDomainEvents< Member, MemberDomainEvent > updateMember( Member member, String name, List< String > departmentIds, String mobile, String email, User user ) {
+        if ( !Objects.equals( member.tenantId( ), user.tenantId( ) ) ) {
+            throw new FitException( ACCESS_DENIED, "更新成员失败，该成员不属于您。",
+                    mapOf( "memberId", member.identifier( ) ) );
+        }
+        if ( notAllDepartmentsExist( departmentIds, member.tenantId( ) ) ) {
+            throw new FitException( NOT_ALL_DEPARTMENTS_EXITS, "更新成员失败，有部门不存在。", "name", name, "departmentIds", departmentIds );
+        }
+
+        if ( isBlank( mobile ) && isBlank( email ) ) {
+            throw new FitException( MOBILE_EMAIL_CANNOT_BOTH_EMPTY, "更新成员失败，手机号和邮箱不能同时为空。",
+                    "memberId", member.identifier( ) );
+        }
+
+        if ( isNotBlank( mobile ) && !mobile.equals( member.mobile( ) ) && memberRepository.existsByMobile( mobile ) ) {
+            throw new FitException( MEMBER_WITH_MOBILE_ALREADY_EXISTS, "更新成员失败，手机号已被占用。",
+                    mapOf( "memberId", member.identifier( ) ) );
+        }
+
+        if ( isNotBlank( email ) && !email.equals( member.email( ) ) && memberRepository.existsByEmail( email ) ) {
+            throw new FitException( MEMBER_WITH_EMAIL_ALREADY_EXISTS, "更新成员失败，邮箱已被占用。",
+                    mapOf( "memberId", member.identifier( ) ) );
+        }
+
+       return member.update( name, departmentIds, mobile, email, user );
+    }
+
     private boolean existsByCustomId( String customId, String tenantId ) {
         List< TenantCachedMember > tenantCachedMembers = memberRepository.tenantCachedMembers( tenantId );
         return tenantCachedMembers.stream( ).anyMatch( member -> Objects.equals( member.customId( ), customId ) );

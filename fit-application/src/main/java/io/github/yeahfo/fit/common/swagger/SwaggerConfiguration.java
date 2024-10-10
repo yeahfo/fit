@@ -52,7 +52,7 @@ public class SwaggerConfiguration {
         return new OpenAPI( ).info( new Info( )
                         .title( "FIT OpenAPI Document" )
                         .version( "0.0.1" )
-                        .description( "Provide FIT data service" )
+                        .description( "Provide FIT content service" )
                         .contact( new Contact( ).name( "FIT" ).url( "https://github.com/yeahfo/fit" )
                                 .email( "fit@qq.com" ) ) )
                 .components( new Components( )

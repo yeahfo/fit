@@ -9,10 +9,9 @@ import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.member.domain.events.MemberCreatedEvent;
 import io.github.yeahfo.fit.core.member.domain.events.MemberDepartmentsChangedEvent;
 import io.github.yeahfo.fit.core.member.domain.events.MemberDomainEvent;
+import io.github.yeahfo.fit.core.member.domain.events.MemberNameChangedEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_ADMIN;
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_MEMBER;
@@ -44,6 +43,14 @@ public class Member extends AggregateRoot {
 
     public Role role( ) {
         return role;
+    }
+
+    public String mobile( ) {
+        return mobile;
+    }
+
+    public String email( ) {
+        return email;
     }
 
     protected Member( ) {
@@ -132,5 +139,38 @@ public class Member extends AggregateRoot {
 
     public void recordFailedLogin( ) {
         this.failedLoginCount.recordFailedLogin( );
+    }
+
+    public ResultWithDomainEvents< Member, MemberDomainEvent > update( String name, List< String > departmentIds, String mobile, String email, User user ) {
+        List< MemberDomainEvent > events = new ArrayList<>( );
+        if ( !Objects.equals( this.name, name ) ) {
+            this.name = name;
+            events.add( new MemberNameChangedEvent( name, user ) );
+        }
+
+        if ( !Objects.equals( this.mobile, mobile ) ) {
+            this.mobileIdentified = false;
+        }
+
+        this.mobile = mobile;
+        this.email = email;
+
+        if ( departmentIds != null ) {//传入null时，不做任何departmentIds的更新，主要用于不因为null而将已有的departmentIds更新没了
+            Set< String > removedDepartmentIds = diff( this.departmentIds, departmentIds );
+            Set< String > addedDepartmentIds = diff( departmentIds, this.departmentIds );
+            if ( isNotEmpty( removedDepartmentIds ) || isNotEmpty( addedDepartmentIds ) ) {
+                events.add( new MemberDepartmentsChangedEvent( removedDepartmentIds, addedDepartmentIds, user ) );
+            }
+            this.departmentIds = departmentIds;
+        }
+
+        this.addOpsLog( "更新信息", user );
+        return new ResultWithDomainEvents<>( this, events );
+    }
+
+    private Set< String > diff( List< String > list1, List< String > list2 ) {
+        HashSet< String > result = new HashSet<>( list1 );
+        result.removeAll( new HashSet<>( list2 ) );
+        return result;
     }
 }
