@@ -8,6 +8,7 @@ import io.github.yeahfo.fit.core.member.domain.TenantCachedMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -151,8 +152,18 @@ public class MemberRepositoryImpl implements MemberRepository {
     }
 
     @Override
+    @CacheEvict( value = MEMBER_CACHE, key = "#id" )
     public void deleteById( String id ) {
         implementation.deleteById( id );
+    }
+
+    @Override
+    @Caching( evict = {
+            @CacheEvict( value = MEMBER_CACHE, key = "#member.identifier()" ),
+            @CacheEvict( value = TENANT_MEMBERS_CACHE, key = "#member.tenantId()" )
+    } )
+    public void delete( Member member ) {
+        implementation.delete( member );
     }
 
     @Override

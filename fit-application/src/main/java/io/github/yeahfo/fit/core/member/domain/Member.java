@@ -6,16 +6,14 @@ import io.github.yeahfo.fit.core.common.domain.UploadedFile;
 import io.github.yeahfo.fit.core.common.domain.user.Role;
 import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.exception.FitException;
-import io.github.yeahfo.fit.core.member.domain.events.MemberCreatedEvent;
-import io.github.yeahfo.fit.core.member.domain.events.MemberDepartmentsChangedEvent;
-import io.github.yeahfo.fit.core.member.domain.events.MemberDomainEvent;
-import io.github.yeahfo.fit.core.member.domain.events.MemberNameChangedEvent;
+import io.github.yeahfo.fit.core.member.domain.events.*;
 
 import java.util.*;
 
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_ADMIN;
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_MEMBER;
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.*;
+import static io.github.yeahfo.fit.core.common.exception.FitException.accessDeniedException;
 import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
 import static io.github.yeahfo.fit.core.common.utils.Identified.newMemberId;
 import static java.util.Set.copyOf;
@@ -172,5 +170,17 @@ public class Member extends AggregateRoot {
         HashSet< String > result = new HashSet<>( list1 );
         result.removeAll( new HashSet<>( list2 ) );
         return result;
+    }
+
+    public void updateRole( Role role, User user ) {
+        if ( !this.tenantId.equals( user.tenantId( ) ) ) {
+            throw accessDeniedException( );
+        }
+        this.role = role;
+        this.addOpsLog( "更新角色为" + role.getRoleName( ), user );
+    }
+
+    public ResultWithDomainEvents< Member, MemberDomainEvent > delete( User user ) {
+        return new ResultWithDomainEvents<>( this, new MemberDeletedEvent( user ) );
     }
 }

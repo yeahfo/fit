@@ -27,6 +27,10 @@ public interface AggregateRootRepository< A extends AggregateRoot, ID > {
 
     void deleteById( ID id );
 
+    default void delete( A aggregateRoot ) {
+
+    }
+
     default void deleteAllById( Iterable< ID > ids ) {
     }
 

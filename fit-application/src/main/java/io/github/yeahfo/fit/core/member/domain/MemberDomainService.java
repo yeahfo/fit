@@ -8,6 +8,7 @@ import io.github.yeahfo.fit.core.department.domain.DepartmentRepository;
 import io.github.yeahfo.fit.core.department.domain.TenantCachedDepartment;
 import io.github.yeahfo.fit.core.member.domain.events.MemberDomainEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberDomainService {
@@ -95,7 +97,7 @@ public class MemberDomainService {
                     mapOf( "memberId", member.identifier( ) ) );
         }
 
-       return member.update( name, departmentIds, mobile, email, user );
+        return member.update( name, departmentIds, mobile, email, user );
     }
 
     private boolean existsByCustomId( String customId, String tenantId ) {
@@ -111,5 +113,27 @@ public class MemberDomainService {
         return !departmentRepository.tenantCachedDepartments( tenantId ).stream( )
                 .map( TenantCachedDepartment::id )
                 .collect( Collectors.toSet( ) ).containsAll( departmentIds );
+    }
+
+    public void checkMinTenantAdminLimit( String tenantId ) {
+        long count = memberRepository.tenantCachedMembers( tenantId )
+                .stream( )
+                .filter( member -> member.isTenantAdmin( ) && member.active( ) )
+                .count( );
+        if ( count < 1 ) {
+            throw new FitException( NO_ACTIVE_TENANT_ADMIN_LEFT, "必须保留至少一个可用的系统管理员。",
+                    mapOf( "tenantId", tenantId ) );
+        }
+    }
+
+    public void checkMaxTenantAdminLimit( String tenantId ) {
+        long count = memberRepository.tenantCachedMembers( tenantId )
+                .stream( )
+                .filter( TenantCachedMember::isTenantAdmin )
+                .count( );
+        if ( count > 10 ) {
+            throw new FitException( MAX_TENANT_ADMIN_REACHED, "系统管理员数量已超出最大限制（10名）。",
+                    mapOf( "tenantId", tenantId ) );
+        }
     }
 }

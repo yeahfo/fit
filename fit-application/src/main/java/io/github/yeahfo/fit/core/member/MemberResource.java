@@ -63,6 +63,23 @@ public class MemberResource {
         memberCommandService.updateMember( memberId, command, user );
     }
 
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/{memberId}/role", consumes = APPLICATION_JSON_VALUE )
+    public void updateMemberRole( @PathVariable @NotBlank @MemberId String memberId,
+                                  @RequestBody @Valid UpdateMemberRoleCommand command,
+                                  @AuthenticationPrincipal User user ) {
+        memberCommandService.updateMemberRole( memberId, command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @DeleteMapping( value = "/{memberId}" )
+    public void deleteMember( @PathVariable @NotBlank @MemberId String memberId,
+                              @AuthenticationPrincipal User user ) {
+        memberCommandService.deleteMember( memberId, user );
+    }
+
     @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
     @PostMapping( value = "/my-managed-members", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE )
     public PagedResponse< ListMember > listMyManagedMembers( @RequestBody @Valid ListMyManagedMembersCommand command,

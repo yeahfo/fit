@@ -17,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.InputStream;
 
+import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_ADMIN;
+import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_MEMBER;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -91,5 +94,43 @@ public class MemberCommandService {
         memberRepository.save( member );
         this.domainEventPublisher.publish( member, resultWithDomainEvents.events );
         log.info( "Updated detail for member[{}].", memberId );
+    }
+
+    @Transactional
+    public void updateMemberRole( String memberId, UpdateMemberRoleCommand command, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Member:UpdateRole", 5 );
+        Member member = memberRepository.findPresent( memberId );
+        if ( command.role( ) == member.role( ) ) {
+            return;
+        }
+
+        member.updateRole( command.role( ), user );
+        memberRepository.save( member );
+
+        if ( command.role( ) == TENANT_MEMBER ) {
+            memberDomainService.checkMinTenantAdminLimit( tenantId );
+        }
+
+        if ( command.role( ) == TENANT_ADMIN ) {
+            memberDomainService.checkMaxTenantAdminLimit( tenantId );
+        }
+
+        log.info( "Updated member[{}] role to {}.", memberId, command.role( ) );
+    }
+
+    @Transactional
+    public void deleteMember( String memberId, User user ) {
+        user.checkIsTenantAdmin( );
+        String tenantId = user.tenantId( );
+        rateLimiter.applyFor( tenantId, "Member:Delete", 5 );
+
+        Member member = memberRepository.findPresent( memberId );
+        ResultWithDomainEvents< Member, MemberDomainEvent > resultWithDomainEvents = member.delete( user );
+        memberDomainService.checkMinTenantAdminLimit( tenantId );
+        memberRepository.delete( member );
+        domainEventPublisher.publish( member, resultWithDomainEvents.events );
+        log.info( "Deleted member[{}].", memberId );
     }
 }
