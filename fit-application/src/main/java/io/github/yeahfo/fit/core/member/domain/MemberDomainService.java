@@ -136,4 +136,52 @@ public class MemberDomainService {
                     mapOf( "tenantId", tenantId ) );
         }
     }
+
+    public Member resetPasswordForMember( String memberId, String password, User user ) {
+        Member member = memberRepository.findPresent( memberId );
+        member.isTenantOwned( user.tenantId( ) );
+        if ( passwordEncoder.matches( password, member.password( ) ) ) {
+            return member;
+        }
+        member.changePassword( passwordEncoder.encode( password ), user );
+        return member;
+    }
+
+    public void changeMyPassword( Member member, String oldPassword, String newPassword ) {
+        if ( Objects.equals( oldPassword, newPassword ) ) {
+            throw new FitException( NEW_PASSWORD_SAME_WITH_OLD, "修改密码失败，新密码不能与原密码相同。", "memberId", member.identifier( ) );
+        }
+
+        if ( !passwordEncoder.matches( oldPassword, member.password( ) ) ) {
+            throw new FitException( PASSWORD_NOT_MATCH, "修改密码失败，原密码不正确。", "memberId", member.identifier( ) );
+        }
+
+        member.changePassword( passwordEncoder.encode( newPassword ), member.toUser( ) );
+    }
+
+    public void changeMyMobile( Member member, String newMobile, String password ) {
+        if ( !passwordEncoder.matches( password, member.password( ) ) ) {
+            throw new FitException( PASSWORD_NOT_MATCH, "修改手机号失败，密码不正确。", "memberId", member.identifier( ) );
+        }
+
+        if ( Objects.equals( member.mobile( ), newMobile ) ) {
+            return;
+        }
+
+        if ( memberRepository.existsByMobile( newMobile ) ) {
+            throw new FitException( MEMBER_WITH_MOBILE_ALREADY_EXISTS, "修改手机号失败，手机号对应成员已存在。",
+                    mapOf( "mobile", newMobile, "memberId", member.identifier( ) ) );
+        }
+
+        member.changeMobile( newMobile, member.toUser( ) );
+    }
+
+    public void identifyMyMobile( Member member, String mobile ) {
+        if ( !Objects.equals( member.mobile( ), mobile ) && memberRepository.existsByMobile( mobile ) ) {
+            throw new FitException( MEMBER_WITH_MOBILE_ALREADY_EXISTS, "认证失败，手机号对应成员已存在。",
+                    mapOf( "mobile", mobile, "memberId", member.identifier( ), "mobile", mobile ) );
+        }
+
+        member.identifyMobile( mobile, member.toUser( ) );
+    }
 }

@@ -172,15 +172,86 @@ public class Member extends AggregateRoot {
         return result;
     }
 
-    public void updateRole( Role role, User user ) {
-        if ( !this.tenantId.equals( user.tenantId( ) ) ) {
+    public void isTenantOwned( String operatorTenantId ) {
+        if ( !this.tenantId.equals( operatorTenantId ) ) {
             throw accessDeniedException( );
         }
+    }
+
+    public void updateRole( Role role, User user ) {
+        isTenantOwned( user.tenantId( ) );
         this.role = role;
         this.addOpsLog( "更新角色为" + role.getRoleName( ), user );
     }
 
     public ResultWithDomainEvents< Member, MemberDomainEvent > delete( User user ) {
+        isTenantOwned( user.tenantId( ) );
         return new ResultWithDomainEvents<>( this, new MemberDeletedEvent( user ) );
+    }
+
+    public void activate( User user ) {
+        isTenantOwned( user.tenantId( ) );
+        if ( active ) {
+            return;
+        }
+
+        this.active = true;
+        addOpsLog( "启用", user );
+    }
+
+    public void deactivate( User user ) {
+        isTenantOwned( user.tenantId( ) );
+        if ( !active ) {
+            return;
+        }
+
+        this.active = false;
+        addOpsLog( "禁用", user );
+    }
+
+    public void changePassword( String encoded, User user ) {
+        this.password = encoded;
+        this.addOpsLog( "重置密码", user );
+    }
+
+    public void changeMobile( String newMobile, User user ) {
+        if ( Objects.equals( this.mobile, newMobile ) ) {
+            return;
+        }
+
+        this.mobile = newMobile;
+        this.mobileIdentified = true;
+        this.addOpsLog( "修改手机号为[" + mobile + "]", user );
+    }
+
+    public void identifyMobile( String mobile, User user ) {
+        if ( isNotBlank( this.mobile ) && !Objects.equals( this.mobile, mobile ) ) {
+            throw new FitException( IDENTIFY_MOBILE_NOT_THE_SAME, "认证手机号与您当前账号的手机号不一致，无法完成认证。", "mobile", mobile );
+        }
+
+        this.mobile = mobile;
+        this.mobileIdentified = true;
+        this.addOpsLog( "认证手机号：" + mobile, user );
+    }
+
+    public ResultWithDomainEvents< Member, MemberDomainEvent > updateBaseSetting( String name, User user ) {
+        if ( Objects.equals( this.name, name ) ) {
+            return new ResultWithDomainEvents<>( this );
+        }
+
+        this.name = name;
+
+        this.addOpsLog( "更新基本设置", user );
+        return new ResultWithDomainEvents<>( this, new MemberNameChangedEvent( name, user ) );
+    }
+
+    public void updateAvatar( UploadedFile avatar, User user ) {
+        this.avatar = avatar;
+        addOpsLog( "更新头像", user );
+    }
+
+    public void deleteAvatar( User user ) {
+        this.avatar = null;
+        addOpsLog( "删除头像", user );
     }
 }

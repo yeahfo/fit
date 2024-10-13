@@ -80,6 +80,84 @@ public class MemberResource {
         memberCommandService.deleteMember( memberId, user );
     }
 
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/{memberId}/activation" )
+    public void activateMember( @PathVariable( "memberId" ) @NotBlank @MemberId String memberId,
+                                @AuthenticationPrincipal User user ) {
+        memberCommandService.activateMember( memberId, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/{memberId}/deactivation" )
+    public void deactivateMember( @PathVariable( "memberId" ) @NotBlank @MemberId String memberId,
+                                  @AuthenticationPrincipal User user ) {
+        memberCommandService.deactivateMember( memberId, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/{memberId}/password", consumes = APPLICATION_JSON_VALUE )
+    public void resetPasswordForMember( @PathVariable( "memberId" ) @NotBlank @MemberId String memberId,
+                                        @RequestBody @Valid ResetMemberPasswordCommand command,
+                                        @AuthenticationPrincipal User user ) {
+        memberCommandService.resetPasswordForMember( memberId, command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/password", consumes = APPLICATION_JSON_VALUE )
+    public void changeMyPassword( @RequestBody @Valid ChangeMyPasswordCommand command,
+                                  @AuthenticationPrincipal User user ) {
+        memberCommandService.changeMyPassword( command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/mobile", consumes = APPLICATION_JSON_VALUE )
+    public void changeMyMobile( @RequestBody @Valid ChangeMyMobileCommand command,
+                                @AuthenticationPrincipal User user ) {
+        memberCommandService.changeMyMobile( command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/mobile-identification", consumes = APPLICATION_JSON_VALUE )
+    public void identifyMyMobile( @RequestBody @Valid IdentifyMyMobileCommand command,
+                                  @AuthenticationPrincipal User user ) {
+        memberCommandService.identifyMyMobile( command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/base-setting", consumes = APPLICATION_JSON_VALUE )
+    public void updateMyBaseSetting( @RequestBody @Valid UpdateMyBaseSettingCommand command,
+                                     @AuthenticationPrincipal User user ) {
+        memberCommandService.updateMyBaseSetting( command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/avatar", consumes = APPLICATION_JSON_VALUE )
+    public void updateMyAvatar( @RequestBody @Valid UpdateMyAvatarCommand command,
+                                @AuthenticationPrincipal User user ) {
+        memberCommandService.updateMyAvatar( command, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @DeleteMapping( value = "/me/avatar" )
+    public void deleteMyAvatar( @AuthenticationPrincipal User user ) {
+        memberCommandService.deleteMyAvatar( user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @PostMapping( value = "/find-back-password", consumes = APPLICATION_JSON_VALUE )
+    public void findBackPassword( @RequestBody @Valid FindBackPasswordCommand command ) {
+        memberCommandService.findBackPassword( command );
+    }
+
     @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
     @PostMapping( value = "/my-managed-members", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE )
     public PagedResponse< ListMember > listMyManagedMembers( @RequestBody @Valid ListMyManagedMembersCommand command,
