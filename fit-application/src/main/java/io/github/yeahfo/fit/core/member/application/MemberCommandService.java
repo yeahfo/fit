@@ -4,6 +4,9 @@ import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import io.github.yeahfo.fit.common.ratelimit.RateLimiter;
 import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.exception.FitException;
+import io.github.yeahfo.fit.core.member.application.commands.*;
+import io.github.yeahfo.fit.core.member.application.imports.MemberImporter;
+import io.github.yeahfo.fit.core.member.application.queries.MemberImportResponse;
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberDomainService;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
@@ -169,7 +172,9 @@ public class MemberCommandService {
     public void resetPasswordForMember( String memberId, ResetMemberPasswordCommand command, User user ) {
         user.checkIsTenantAdmin( );
         rateLimiter.applyFor( user.tenantId( ), "Member:ResetPassword", 5 );
-        Member member = memberDomainService.resetPasswordForMember( memberId, command.password( ), user );
+
+        Member member = memberRepository.findPresent( memberId );
+        memberDomainService.resetPasswordForMember( member, command.password( ), user );
         memberRepository.save( member );
         log.info( "Reset password for member[{}].", memberId );
     }
@@ -245,7 +250,6 @@ public class MemberCommandService {
     @Transactional
     public void findBackPassword( FindBackPasswordCommand command ) {
         rateLimiter.applyFor( "Member:FindBackPassword:All", 5 );
-
         String mobileOrEmail = command.mobileOrEmail( );
         verificationCodeChecker.check( mobileOrEmail, command.verification( ), FIND_BACK_PASSWORD );
 
@@ -253,8 +257,28 @@ public class MemberCommandService {
                 .orElseThrow( ( ) -> new FitException( MEMBER_NOT_FOUND_FOR_FINDBACK_PASSWORD,
                         "没有找到手机号或密码对应用户。",
                         mapOf( "mobileOrEmail", mobileOrEmail ) ) );
-        memberDomainService.changeMyPassword( member, member.password( ), command.password( ) );
+        memberDomainService.resetPasswordForMember( member, command.password( ), member.toUser( ) );
         memberRepository.save( member );
         log.info( "Password found back by member[{}].", member.identifier( ) );
+    }
+
+    @Transactional
+    public void topApp( String appId, User user ) {
+        rateLimiter.applyFor( user.tenantId( ), "Member:TopApp", 5 );
+
+        Member member = memberRepository.findPresent( user.memberId( ) );
+        member.topApp( appId, user );
+        memberRepository.save( member );
+        log.info( "Mark app[{}] as top by member[{}].", appId, member.identifier( ) );
+    }
+
+    @Transactional
+    public void cancelTopApp( String appId, User user ) {
+        rateLimiter.applyFor( user.tenantId( ), "Member:CancelTopApp", 5 );
+
+        Member member = memberRepository.findPresent( user.memberId( ) );
+        member.cancelTopApp( appId, user );
+        memberRepository.save( member );
+        log.info( "Unmark app[{}] as top by member[{}].", appId, member.identifier( ) );
     }
 }

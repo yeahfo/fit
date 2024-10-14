@@ -1,9 +1,6 @@
 package io.github.yeahfo.fit.core.tenant.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -18,6 +15,7 @@ import static lombok.AccessLevel.PRIVATE;
 @Getter
 @EqualsAndHashCode
 @Builder( access = PRIVATE )
+@NoArgsConstructor( access = PRIVATE )
 @AllArgsConstructor( access = PRIVATE )
 public class ResourceUsage {
     private long appCount;//已创建应用总数

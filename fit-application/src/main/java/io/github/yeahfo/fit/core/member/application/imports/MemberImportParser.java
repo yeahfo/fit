@@ -1,4 +1,4 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.imports;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
@@ -20,7 +20,7 @@ import java.util.Set;
 
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.*;
 import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
-import static io.github.yeahfo.fit.core.member.application.MemberImportRecord.*;
+import static io.github.yeahfo.fit.core.member.application.imports.MemberImportRecord.*;
 import static jakarta.validation.Validation.buildDefaultValidatorFactory;
 import static org.apache.commons.collections4.CollectionUtils.isEmpty;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;

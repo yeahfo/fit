@@ -4,10 +4,7 @@ import io.github.yeahfo.fit.core.app.domain.page.control.ControlType;
 import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.plan.domain.Plan;
 import io.github.yeahfo.fit.core.plan.domain.PlanType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.*;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -26,6 +23,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 @EqualsAndHashCode
 @Builder( access = PRIVATE )
+@NoArgsConstructor( access = PRIVATE )
 @AllArgsConstructor( access = PRIVATE )
 public class Packages {
     private static final int MAX_PLAN_DURATION_YEARS = 2;

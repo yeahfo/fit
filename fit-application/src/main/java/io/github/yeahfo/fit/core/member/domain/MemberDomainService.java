@@ -137,14 +137,12 @@ public class MemberDomainService {
         }
     }
 
-    public Member resetPasswordForMember( String memberId, String password, User user ) {
-        Member member = memberRepository.findPresent( memberId );
+    public void resetPasswordForMember( Member member, String password, User user ) {
         member.isTenantOwned( user.tenantId( ) );
         if ( passwordEncoder.matches( password, member.password( ) ) ) {
-            return member;
+            return;
         }
         member.changePassword( passwordEncoder.encode( password ), user );
-        return member;
     }
 
     public void changeMyPassword( Member member, String oldPassword, String newPassword ) {

@@ -10,6 +10,7 @@ import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.departmenthierarchy.domain.events.DepartmentHierarchyDomainEvent;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.DEPARTMENT_HIERARCHY_TOO_DEEP;
 import static io.github.yeahfo.fit.core.common.utils.FitConstants.MAX_GROUP_HIERARCHY_LEVEL;
@@ -36,5 +37,9 @@ public class DepartmentHierarchy extends AggregateRoot {
         } catch ( IdNodeLevelOverflowException ex ) {
             throw new FitException( DEPARTMENT_HIERARCHY_TOO_DEEP, "部门层级最多不能超过5层。", "tenantId", this.tenantId( ) );
         }
+    }
+
+    public Map< String, String > departmentFullNames( Map< String, String > departmentNames ) {
+        return this.hierarchy.fullNames( departmentNames );
     }
 }

@@ -5,6 +5,8 @@ import io.github.yeahfo.fit.core.tenant.domain.PackagesStatus;
 import io.github.yeahfo.fit.core.tenant.domain.Tenant;
 import io.github.yeahfo.fit.core.tenant.domain.TenantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
@@ -13,7 +15,7 @@ import java.util.Optional;
 
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.TENANT_NOT_FOUND;
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
-import static io.github.yeahfo.fit.core.common.utils.FitConstants.TENANT_COLLECTION;
+import static io.github.yeahfo.fit.core.common.utils.FitConstants.*;
 import static io.github.yeahfo.fit.core.common.utils.MapUtils.mapOf;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -25,11 +27,13 @@ public class TenantRepositoryImpl implements TenantRepository {
     private final TenantRepositoryImplementation implementation;
 
     @Override
+    @CacheEvict( value = TENANT_CACHE, key = "#tenant.identifier()" )
     public Tenant save( Tenant tenant ) {
         return implementation.save( tenant );
     }
 
     @Override
+    @Cacheable( value = TENANT_CACHE, key = "#id", unless = "#result == null" )
     public Optional< Tenant > findById( String id ) {
         return implementation.findById( id );
     }

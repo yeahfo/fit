@@ -4,7 +4,6 @@ package io.github.yeahfo.fit.core.common.domain;
 import io.github.yeahfo.fit.core.common.exception.FitException;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.AR_NOT_FOUND;
@@ -45,9 +44,13 @@ public interface AggregateRootRepository< A extends AggregateRoot, ID > {
         String className = getClass( ).getSimpleName( );
 
         if ( !classMapper.containsKey( className ) ) {
-            Type genericSuperclass = getClass( ).getGenericSuperclass( );
-            Type[] actualTypeArguments = ( ( ParameterizedType ) genericSuperclass ).getActualTypeArguments( );
-            classMapper.put( className, ( Class< ? > ) actualTypeArguments[ 0 ] );
+            Class< ? > actualTypeArgument = Arrays.stream( getClass( ).getGenericInterfaces( ) )
+                    .filter( type -> type instanceof ParameterizedType )
+                    .map( type -> ( ( ParameterizedType ) type ).getActualTypeArguments( ) )
+                    .filter( types -> Arrays.stream( types ).findFirst( ).isPresent( ) )
+                    .map( types -> ( Class< ? > ) Arrays.stream( types ).findFirst( ).get( ) )
+                    .findFirst( ).orElseThrow( );
+            classMapper.put( className, actualTypeArgument );
         }
         return classMapper.get( className );
     }

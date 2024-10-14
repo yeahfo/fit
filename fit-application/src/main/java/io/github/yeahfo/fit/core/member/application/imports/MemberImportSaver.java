@@ -1,4 +1,4 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.imports;
 
 import io.eventuate.tram.events.aggregates.ResultWithDomainEvents;
 import io.github.yeahfo.fit.core.common.domain.user.User;

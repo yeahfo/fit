@@ -3,8 +3,12 @@ package io.github.yeahfo.fit.core.member;
 import io.github.yeahfo.fit.core.common.application.IdentifierResponse;
 import io.github.yeahfo.fit.core.common.application.PagedResponse;
 import io.github.yeahfo.fit.core.common.domain.user.User;
+import io.github.yeahfo.fit.core.common.validation.id.app.AppId;
 import io.github.yeahfo.fit.core.common.validation.id.member.MemberId;
+import io.github.yeahfo.fit.core.common.validation.id.tenant.TenantId;
 import io.github.yeahfo.fit.core.member.application.*;
+import io.github.yeahfo.fit.core.member.application.commands.*;
+import io.github.yeahfo.fit.core.member.application.queries.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 
 import static io.github.yeahfo.fit.common.swagger.SwaggerConfiguration.AUTHORIZATION_BEARER_TOKEN;
 import static io.github.yeahfo.fit.core.common.application.IdentifierResponse.identifier;
@@ -56,7 +61,7 @@ public class MemberResource {
 
     @ResponseStatus( ACCEPTED )
     @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
-    @PutMapping( value = "/{memberId}", consumes = MULTIPART_FORM_DATA_VALUE )
+    @PutMapping( value = "/{memberId}", consumes = APPLICATION_JSON_VALUE )
     public void updateMember( @PathVariable @NotBlank @MemberId String memberId,
                               @RequestBody @Valid UpdateMemberInfoCommand command,
                               @AuthenticationPrincipal User user ) {
@@ -158,6 +163,46 @@ public class MemberResource {
         memberCommandService.findBackPassword( command );
     }
 
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @PutMapping( value = "/me/top-apps/{appId}" )
+    public void topApp( @PathVariable( "appId" ) @NotBlank @AppId String appId,
+                        @AuthenticationPrincipal User user ) {
+        memberCommandService.topApp( appId, user );
+    }
+
+    @ResponseStatus( ACCEPTED )
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @DeleteMapping( value = "/me/top-apps/{appId}" )
+    public void cancelTopApp( @PathVariable( "appId" ) @NotBlank @AppId String appId,
+                              @AuthenticationPrincipal User user ) {
+        memberCommandService.cancelTopApp( appId, user );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/me", produces = APPLICATION_JSON_VALUE )
+    public ConsoleMemberProfile fetchMyProfile( @AuthenticationPrincipal User user ) {
+        return memberQueryService.fetchMyProfile( user );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/client/me", produces = APPLICATION_JSON_VALUE )
+    public ClientMemberProfile fetchMyClientProfile( @AuthenticationPrincipal User user ) {
+        return memberQueryService.fetchMyClientMemberProfile( user );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/me/info", produces = APPLICATION_JSON_VALUE )
+    public MemberInfo fetchMyMemberInfo( @AuthenticationPrincipal User user ) {
+        return memberQueryService.fetchMyMemberInfo( user );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/me/base-setting", produces = APPLICATION_JSON_VALUE )
+    public MemberBaseSetting fetchMyBaseSetting( @AuthenticationPrincipal User user ) {
+        return memberQueryService.fetchMyBaseSetting( user );
+    }
+
     @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
     @PostMapping( value = "/my-managed-members", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE )
     public PagedResponse< ListMember > listMyManagedMembers( @RequestBody @Valid ListMyManagedMembersCommand command,
@@ -169,5 +214,18 @@ public class MemberResource {
                 .total( page.getTotalElements( ) )
                 .content( page.getContent( ) )
                 .build( );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/all-references", produces = APPLICATION_JSON_VALUE )
+    public List< MemberReferenced > listMemberReferences( @AuthenticationPrincipal User user ) {
+        return memberQueryService.listMemberReferences( user );
+    }
+
+    @SecurityRequirement( name = AUTHORIZATION_BEARER_TOKEN )
+    @GetMapping( value = "/all-references/{tenantId}", produces = APPLICATION_JSON_VALUE )
+    public List< MemberReferenced > listMemberReferencesForTenant( @PathVariable @NotBlank @TenantId String tenantId,
+                                                                   @AuthenticationPrincipal User user ) {
+        return memberQueryService.listMemberReferences( tenantId, user );
     }
 }

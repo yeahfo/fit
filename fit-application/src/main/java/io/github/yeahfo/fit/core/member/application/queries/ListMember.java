@@ -1,4 +1,4 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.queries;
 
 import io.github.yeahfo.fit.core.common.domain.UploadedFile;
 import io.github.yeahfo.fit.core.common.domain.user.Role;

@@ -1,6 +1,11 @@
 package io.github.yeahfo.fit.core.common.domain.user;
 
+import io.github.yeahfo.fit.core.common.exception.FitException;
+
+import java.util.Objects;
+
 import static io.github.yeahfo.fit.core.common.domain.user.Role.*;
+import static io.github.yeahfo.fit.core.common.exception.ErrorCode.WRONG_TENANT;
 import static io.github.yeahfo.fit.core.common.exception.FitException.accessDeniedException;
 import static io.github.yeahfo.fit.core.common.exception.FitException.authenticationException;
 import static io.github.yeahfo.fit.core.common.utils.CommonUtils.requireNonBlank;
@@ -73,4 +78,30 @@ public record User( String memberId,
     private boolean internalIsTenantAdmin( ) {
         return role == TENANT_ADMIN;
     }
+
+    public boolean isTenantAdmin( ) {
+        if ( !internalIsLoggedIn( ) ) {
+            return false;
+        }
+
+        return internalIsTenantAdmin( );
+    }
+
+    public void checkIsLoggedInFor( String tenantId ) {
+        requireNonBlank( tenantId, "TenantId must not be blank." );
+
+        internalCheckLoggedIn( );
+        internalCheckTenantFor( tenantId );
+    }
+
+    private void internalCheckTenantFor( String tenantId ) {
+        if ( isWrongTenantFor( tenantId ) ) {
+            throw new FitException( WRONG_TENANT, "租户错误。", "userTenantId", this.tenantId( ), "tenantId", tenantId );
+        }
+    }
+
+    private boolean isWrongTenantFor( String tenantId ) {
+        return !Objects.equals( this.tenantId, tenantId );
+    }
+
 }

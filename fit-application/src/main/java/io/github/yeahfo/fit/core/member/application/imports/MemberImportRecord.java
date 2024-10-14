@@ -1,4 +1,4 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.imports;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.github.yeahfo.fit.core.common.validation.email.Email;

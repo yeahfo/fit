@@ -1,7 +1,8 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.imports;
 
 import io.github.yeahfo.fit.core.common.domain.user.User;
 import io.github.yeahfo.fit.core.common.exception.FitException;
+import io.github.yeahfo.fit.core.member.application.queries.MemberImportResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

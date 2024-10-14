@@ -1,7 +1,7 @@
 package io.github.yeahfo.fit.core.member.domain;
 
 import io.github.yeahfo.fit.core.common.domain.AggregateRootRepository;
-import io.github.yeahfo.fit.core.member.application.ListMember;
+import io.github.yeahfo.fit.core.member.application.queries.ListMember;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 

@@ -1,4 +1,4 @@
-package io.github.yeahfo.fit.core.member.application;
+package io.github.yeahfo.fit.core.member.application.commands;
 
 import io.github.yeahfo.fit.core.common.validation.collection.NoBlankString;
 import io.github.yeahfo.fit.core.common.validation.collection.NoDuplicatedString;

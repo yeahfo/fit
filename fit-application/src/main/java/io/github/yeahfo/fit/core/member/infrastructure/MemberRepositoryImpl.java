@@ -1,7 +1,7 @@
 package io.github.yeahfo.fit.core.member.infrastructure;
 
 import io.github.yeahfo.fit.core.common.utils.Pagination;
-import io.github.yeahfo.fit.core.member.application.ListMember;
+import io.github.yeahfo.fit.core.member.application.queries.ListMember;
 import io.github.yeahfo.fit.core.member.domain.Member;
 import io.github.yeahfo.fit.core.member.domain.MemberRepository;
 import io.github.yeahfo.fit.core.member.domain.TenantCachedMember;

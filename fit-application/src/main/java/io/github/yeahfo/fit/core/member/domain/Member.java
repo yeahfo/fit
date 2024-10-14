@@ -9,7 +9,9 @@ import io.github.yeahfo.fit.core.common.exception.FitException;
 import io.github.yeahfo.fit.core.member.domain.events.*;
 
 import java.util.*;
+import java.util.stream.Stream;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_ADMIN;
 import static io.github.yeahfo.fit.core.common.domain.user.Role.TENANT_MEMBER;
 import static io.github.yeahfo.fit.core.common.exception.ErrorCode.*;
@@ -253,5 +255,31 @@ public class Member extends AggregateRoot {
     public void deleteAvatar( User user ) {
         this.avatar = null;
         addOpsLog( "删除头像", user );
+    }
+
+    public void topApp( String appId, User user ) {
+        topAppIds = Stream.concat( Stream.of( appId ), this.topAppIds.stream( ) ).limit( 20 ).collect( toImmutableList( ) );
+        addOpsLog( "顶置应用[" + appId + "]", user );
+    }
+
+    public void cancelTopApp( String appId, User user ) {
+        this.topAppIds = this.topAppIds.stream( ).filter( id -> !Objects.equals( id, appId ) ).collect( toImmutableList( ) );
+        addOpsLog( "取消顶置应用[" + appId + "]", user );
+    }
+
+    public UploadedFile avatar( ) {
+        return avatar;
+    }
+
+    public List< String > toppedAppIds( ) {
+        return topAppIds;
+    }
+
+    public boolean mobileIdentified( ) {
+        return mobileIdentified;
+    }
+
+    public List< String > departmentIds( ) {
+        return departmentIds;
     }
 }
