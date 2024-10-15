@@ -135,4 +135,18 @@ public record PackagesStatus(
                     mapOf( "tenantId", tenantId( ) ) );
         }
     }
+
+    public void validateAddApp( ) {
+        if ( isMaxAppReached( ) ) {
+            if ( isExpired( ) ) {
+                throw new FitException( APP_COUNT_LIMIT_REACHED,
+                        "当前套餐(" + currentPlanName( ) + ")已过期，有效套餐已降为免费版，无法新建应用，如需继续请及时续费或升级。",
+                        mapOf( "tenantId", tenantId( ) ) );
+            }
+            throw new FitException( APP_COUNT_LIMIT_REACHED,
+                    "新建应用失败，应用总数已经达到当前套餐(" +
+                            currentPlanName( ) + ")的上限(" + packages.effectiveMaxAppCount( ) + "个)，如需继续请及时升级。",
+                    mapOf( "tenantId", tenantId( ) ) );
+        }
+    }
 }
