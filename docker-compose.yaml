@@ -23,3 +23,31 @@ services:
       TZ: Asia/Shanghai
       REDIS_ARGS: >
         --requirepass redispw
+  redis-streams:
+    image: redis/redis-stack:7.2.0-v10
+    ports:
+      - "6380:6380"
+      - "8002:8001"
+    environment:
+      TZ: Asia/Shanghai
+
+  postgres:
+    build:
+      context: .
+      dockerfile: fit-common/postgres-wal2json/Dockerfile
+    ports:
+      - "5432:5432"
+    #    volumes:
+    #      - ./postgres-persistence:/bitnami/postgresql
+    environment:
+      TZ: Asia/Shanghai
+      PGDATA: /bitnami/postgresql/data
+      USE_DB_ID: true
+      USE_JSON_PAYLOAD_AND_HEADERS: true
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DATABASE: fit
+      POSTGRESQL_EXTRA_FLAGS: >
+        -c wal_level=logical 
+        -c timezone=Asia/Shanghai 
+        -c log_timezone=Asia/Shanghai

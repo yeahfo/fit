@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.yeahfo</groupId>
-    <artifactId>fit</artifactId>
+    <artifactId>fit-customers-and-orders-redis</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>fit</name>
-    <description>fit</description>
+    <name>fit-customers-and-orders-redis</name>
+    <description>fit-customers-and-orders-redis</description>
     <packaging>pom</packaging>
     <properties>
         <java.version>21</java.version>
@@ -24,9 +24,20 @@
         </pluginRepository>
     </pluginRepositories>
     <modules>
-        <module>fit-application</module>
-        <module>fit-dependencies</module>
-        <module>fit-common</module>
-        <module>fit-customers-and-orders-redis</module>
+        <module>cor-dependencies</module>
+
+        <module>cor-common</module>
+
+        <module>cor-customer-domain-models</module>
+        <module>cor-customer-domain-events</module>
+        <module>cor-customer-application-commands</module>
+        <module>cor-customer-application-services</module>
+        <module>cor-customer-infrastructure-jpa</module>
+
+        <module>cor-customer-spring-application</module>
+
+        <module>cor-order-domain</module>
+
+        <module>cor-order-history-domain</module>
     </modules>
 </project>

@@ -1,0 +1,22 @@
+package io.github.yeahfo.cor.customer.application;
+
+import io.github.yeahfo.cor.customer.application.commands.CreateCustomerCommand;
+import io.github.yeahfo.cor.customer.application.commands.CreateCustomerResult;
+import io.github.yeahfo.cor.customer.domain.Customer;
+import io.github.yeahfo.cor.customer.domain.events.CustomerDomainEventPublisher;
+import io.github.yeahfo.cor.customer.domain.CustomerRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
+
+@RequiredArgsConstructor
+public class CustomerService {
+    private final CustomerRepository customerRepository;
+    private final CustomerDomainEventPublisher domainEventPublisher;
+
+    @Transactional
+    public CreateCustomerResult createCustomer( CreateCustomerCommand command ) {
+        Customer customer = customerRepository.save( Customer.create( command.name( ), command.creditLimit( ) ) );
+        domainEventPublisher.publishCustomerCreatedEvent( customer, command.name( ), command.creditLimit( ) );
+        return new CreateCustomerResult( customer.identifier( ) );
+    }
+}
