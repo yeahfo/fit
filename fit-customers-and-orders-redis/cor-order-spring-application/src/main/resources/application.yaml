@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: order-spring-application
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost/fit
+    username: postgres
+    password: postgres
+  jpa:
+    open-in-view: false
+    generate-ddl: true
+server:
+  port: 8091
+
+eventuate:
+  redis:
+    servers: localhost:6380
+    partitions: 2
+
+logging:
+  level:
+    org.hibernate.boot.model.internal.JPAXMLOverriddenAnnotationReader: error

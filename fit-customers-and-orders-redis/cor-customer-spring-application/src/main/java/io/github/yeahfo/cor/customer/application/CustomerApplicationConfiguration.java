@@ -1,7 +1,9 @@
-package io.github.yeahfo.cor.customer.configuration;
+package io.github.yeahfo.cor.customer.application;
 
 import io.eventuate.tram.events.publisher.DomainEventPublisher;
-import io.github.yeahfo.cor.customer.application.CustomerService;
+import io.eventuate.tram.events.subscriber.DomainEventDispatcher;
+import io.eventuate.tram.events.subscriber.DomainEventDispatcherFactory;
+import io.github.yeahfo.cor.customer.application.consumer.CustomerApplicationEventSubscriber;
 import io.github.yeahfo.cor.customer.domain.CustomerRepository;
 import io.github.yeahfo.cor.customer.domain.events.CustomerDomainEventPublisher;
 import io.github.yeahfo.cro.customer.infrastructure.CustomerRepositoryImpl;
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories( basePackageClasses = {
         CustomerRepositoryImplementation.class
 } )
-public class CustomerConfiguration {
+public class CustomerApplicationConfiguration {
 
     @Bean
     CustomerService customerService( CustomerRepository customerRepository,
@@ -37,5 +39,11 @@ public class CustomerConfiguration {
     @Bean
     CustomerDomainEventPublisher customerDomainEventPublisher( DomainEventPublisher domainEventPublisher ) {
         return new CustomerDomainEventPublisher( domainEventPublisher );
+    }
+
+    @Bean
+    DomainEventDispatcher customerApplicationDomainEventDispatcher( DomainEventDispatcherFactory factory,
+                                                                    CustomerApplicationEventSubscriber subscriber ) {
+        return factory.make( subscriber.getClass( ).getSimpleName( ), subscriber.domainEventHandlers( ) );
     }
 }

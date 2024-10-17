@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings
+        version="3.1"
+        xmlns="https://jakarta.ee/xml/ns/persistence/orm"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence/orm
+                            https://jakarta.ee/xml/ns/persistence/orm/orm.xsd">
+    <access>FIELD</access>
+    <mapped-superclass class="io.github.yeahfo.cor.common.domain.AggregateRoot">
+        <attributes>
+            <id name="id"/>
+            <basic name="createdAt"/>
+            <basic name="createdBy"/>
+            <basic name="creator"/>
+            <basic name="updatedAt"/>
+            <basic name="updatedBy"/>
+            <basic name="updater"/>
+            <version name="version"/>
+        </attributes>
+    </mapped-superclass>
+    <entity class="io.github.yeahfo.cor.order.domain.Order">
+        <table name="orders"/>
+        <attributes>
+            <basic name="state">
+                <enumerated>STRING</enumerated>
+            </basic>
+            <embedded name="orderDetails">
+                <attribute-override name="orderTotal.amount">
+                    <column name="order_total"/>
+                </attribute-override>
+            </embedded>
+        </attributes>
+    </entity>
+    <embeddable class="io.github.yeahfo.cor.common.domain.Money"/>
+    <embeddable class="io.github.yeahfo.cor.order.domain.OrderDetails"/>
+</entity-mappings>

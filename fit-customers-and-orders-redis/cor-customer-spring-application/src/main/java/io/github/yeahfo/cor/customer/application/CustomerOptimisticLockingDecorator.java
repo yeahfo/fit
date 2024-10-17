@@ -1,4 +1,4 @@
-package io.github.yeahfo.cor.customer.configuration;
+package io.github.yeahfo.cor.customer.application;
 
 import io.eventuate.tram.consumer.common.MessageHandlerDecorator;
 import io.eventuate.tram.consumer.common.MessageHandlerDecoratorChain;

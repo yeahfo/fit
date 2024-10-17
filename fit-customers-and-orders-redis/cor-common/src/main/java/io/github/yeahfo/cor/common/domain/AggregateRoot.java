@@ -22,10 +22,10 @@ public abstract class AggregateRoot< ID > implements Identified< ID > {
         return this.id;
     }
 
-    protected abstract Supplier< ID > idSupplier( );
+    protected abstract Supplier< ID > idGenerator( );
 
     protected AggregateRoot( ) {
-        this.id = idSupplier( ).get( );
+        this.id = idGenerator( ).get( );
         this.createdAt = this.updatedAt = now( );
     }
 
@@ -37,7 +37,7 @@ public abstract class AggregateRoot< ID > implements Identified< ID > {
     }
 
     protected void initialize( ID createdBy, String creator ) {
-        this.id = idSupplier( ).get( );
+        this.id = idGenerator( ).get( );
         this.createdAt = this.updatedAt = now( );
         this.createdBy = this.updatedBy = createdBy;
         this.creator = this.updater = creator;

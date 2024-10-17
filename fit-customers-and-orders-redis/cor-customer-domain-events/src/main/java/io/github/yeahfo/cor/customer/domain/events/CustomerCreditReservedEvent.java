@@ -1,4 +1,6 @@
 package io.github.yeahfo.cor.customer.domain.events;
 
-public record CustomerCreditReservedEvent( Long orderId ) implements CustomerDomainEvent {
+import io.github.yeahfo.cor.common.domain.Money;
+
+public record CustomerCreditReservedEvent( Long orderId, Money subtracted ) implements CustomerDomainEvent {
 }

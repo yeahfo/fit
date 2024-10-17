@@ -50,6 +50,11 @@
             </dependency>
             <dependency>
                 <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-customer-infrastructure-jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
                 <artifactId>cor-customer-domain-events</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -63,21 +68,41 @@
                 <artifactId>cor-customer-application-services</artifactId>
                 <version>${project.version}</version>
             </dependency>
-            <dependency>
-                <groupId>io.github.yeahfo</groupId>
-                <artifactId>cor-customer-infrastructure-jpa</artifactId>
-                <version>${project.version}</version>
-            </dependency>
 
             <dependency>
                 <groupId>io.github.yeahfo</groupId>
                 <artifactId>cor-order-domain</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-order-infrastructure-jpa</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-order-application-commands</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-order-application-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.github.yeahfo</groupId>
                 <artifactId>cor-order-history-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-order-history-application-services</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.yeahfo</groupId>
+                <artifactId>cor-order-history-infrastructure-redis</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

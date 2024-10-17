@@ -15,7 +15,7 @@ public class Customer extends AggregateRoot< Long > {
     protected Map< Long, Money > creditReservations;
 
     @Override
-    protected Supplier< Long > idSupplier( ) {
+    protected Supplier< Long > idGenerator( ) {
         return SnowflakeIdGenerator::newSnowflakeId;
     }
 
@@ -30,5 +30,12 @@ public class Customer extends AggregateRoot< Long > {
         customer.creditReservations = emptyMap( );
         customer.initialize( customer.identifier( ), name );
         return customer;
+    }
+
+    public void reserveCredit( long orderId, Money orderTotal ) throws CustomerCreditLimitExceededException {
+        if ( !availableCredit( ).isGreaterThanOrEqual( orderTotal ) ) {
+            throw new CustomerCreditLimitExceededException( );
+        }
+        creditReservations.put( orderId, orderTotal );
     }
 }

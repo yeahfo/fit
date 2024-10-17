@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "eventuate.redis.servers",
+      "type": "java.lang.String",
+      "description": "Description for eventuate.redis.servers."
+    },
+    {
+      "name": "eventuate.redis.partitions",
+      "type": "java.lang.Integer",
+      "description": "Description for eventuate.redis.partitions."
+    }
+  ]
+}

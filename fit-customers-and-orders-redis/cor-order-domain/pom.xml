@@ -12,6 +12,14 @@
     <name>cor-order-domain</name>
     <description>cor-order-domain</description>
     <dependencies>
+        <dependency>
+            <groupId>io.github.yeahfo</groupId>
+            <artifactId>cor-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.eventuate.tram.core</groupId>
+            <artifactId>eventuate-tram-aggregate-domain-events</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

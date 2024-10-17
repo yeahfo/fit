@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: order-history-application
+  data:
+    redis:
+      port: 6380
+server:
+  port: 9527
